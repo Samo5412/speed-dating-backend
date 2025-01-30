@@ -1,5 +1,39 @@
 {
+  "name": "dt198g_project_backend",
+  "version": "1.0.0",
+  "main": "dist/app.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --incremental",
+    "start": "nodemon --verbose --watch src/ --ext ts,tsx --exec \"npm run build && node dist/app.js\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org:dt198g-project/speed-dating-backend.git"
+  },
+  "author": "grupp1",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://bitbucket.org/dt198g-project/speed-dating-backend/issues"
+  },
+  "homepage": "https://bitbucket.org/dt198g-project/speed-dating-backend/src/main/README.md",
+  "description": "Best dating app to ever be developed!",
   "dependencies": {
+    "connect-mongo": "^5.1.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "express-session": "^1.18.1",
+    "mongoose": "^8.9.5",
     "nodemon": "^3.1.9"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/express-session": "^1.18.1",
+    "typescript": "^5.7.3"
   }
 }
