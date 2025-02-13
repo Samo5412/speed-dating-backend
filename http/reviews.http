@@ -1,0 +1,93 @@
+# Reviews API Endpoints
+@baseUrl = http://localhost:3000/api/v1
+
+### Create a test user that will be the reviewer
+// Expected HTTP response status code: 201
+// Expected response: a user object (json)
+# @name createReviewer
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+    "email": "reviewerUser2@example.com",
+    "password": "password123",
+    "role": "participant"
+}
+
+### Create another test user that will be reviewed
+// Expected HTTP response status code: 201
+// Expected response: a user object (json)
+# @name createReviewed
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+    "email": "reviewedUser2@example.com",
+    "password": "password123",
+    "role": "participant"
+}
+
+### Store the IDs as variables
+
+@reviewerId = {{createReviewer.response.body._id}}
+@reviewedUserId = {{createReviewed.response.body._id}}
+
+### Create the review using the reviewer and reviewed IDs
+// Expected HTTP response status code: 201
+// Expected response: the created review object (json)
+# @name createReview
+POST {{baseUrl}}/reviews
+Content-Type: application/json
+
+{
+    "reviewerId": "{{reviewerId}}",
+    "reviewedUserId": "{{reviewedUserId}}",
+    "rating": 5,
+    "comment": "Great conversation!"
+}
+
+### Store the review id
+@reviewId = {{createReview.response.body._id}}
+
+### Test: Get all reviews
+// Expected HTTP response status code: 200
+// Expected response: an array (json) with all reviews
+GET {{baseUrl}}/reviews
+
+###############################################
+
+// Test: Get specific review
+// Expected HTTP response status code: 200
+// Expected response: a review object (json)
+GET {{baseUrl}}/reviews/{{reviewId}}
+
+###############################################
+
+// Test: Update review
+// Expected HTTP response status code: 200
+// Expected response: the updated review object (json)
+PUT {{baseUrl}}/reviews/{{reviewId}}
+Content-Type: application/json
+
+{
+    "reviewerId": "{{reviewerId}}",
+    "reviewedUserId": "{{reviewedUserId}}",
+    "rating": 4
+}
+
+###############################################
+
+// Test: Delete review
+// Expected HTTP response status code: 200
+// Expected response: "Review deleted"
+DELETE {{baseUrl}}/reviews/{{reviewId}}
+
+### Delete the reviewer
+// Expected HTTP response status code: 200
+// Expected response: "User deleted"
+DELETE {{baseUrl}}/users/{{reviewerId}}
+
+### Delete the reviewed user
+// Expected HTTP response status code: 200
+// Expected response: "User deleted"
+DELETE {{baseUrl}}/users/{{reviewedUserId}}
