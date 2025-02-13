@@ -1,0 +1,49 @@
+# @name Users API Endpoints
+
+@baseUrl = http://localhost:3000/api/v1
+
+### Create a new user
+// Expected HTTP response status code: 201
+// Expected response: a user object (json)
+# @name createUser
+POST {{baseUrl}}/users HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "test83@example.com",
+    "password": "password123",
+    "role": "participant"
+}
+
+###
+
+@userId = {{createUser.response.body._id}}
+@userEmail = {{createUser.response.body.email}}
+
+###
+
+### Update the created user by id
+// Expected HTTP response status code: 200
+# @name updateUser
+PUT {{baseUrl}}/users/{{userId}}
+Content-Type: application/json
+
+{
+    "email": "updatedUsingId@example.com"
+}
+
+### Get specific user by ID
+// Test: Get specific user
+// Expected HTTP response status code: 200
+// Expected response: a user object (json)
+GET {{baseUrl}}/users/{{userId}}
+
+### Delete the user
+// Expected HTTP response status code: 200
+DELETE {{baseUrl}}/users/{{userId}}
+
+### Get all users
+// Test: Get all users
+// Expected HTTP response status code: 200
+// Expected response: an array (json) with all users
+GET {{baseUrl}}/users
