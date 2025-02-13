@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 
 const ReviewSchema = new mongoose.Schema({
-  reviewer: {
+  reviewerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
     index: true,
   },
-  reviewedUser: {
+  reviewedUserId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
