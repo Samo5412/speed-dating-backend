@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import { usersRouter } from "./routes/users.js";
 import { reviewsRouter } from "./routes/reviews.js";
+import { userProfilesRouter } from "./routes/userProfiles.js";
 
 dotenv.config();
 
@@ -88,6 +89,7 @@ const api_path = process.env.API_PATH || "";
 
 app.use(`${api_path}/users`, usersRouter);
 app.use(`${api_path}/reviews`, reviewsRouter);
+app.use(`${api_path}/userProfiles`, userProfilesRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
