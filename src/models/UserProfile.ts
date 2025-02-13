@@ -31,7 +31,7 @@ const UserProfileSchema = new mongoose.Schema({
     },
   ],
   lookingFor: {
-    ageRange: { type: Number },
+    ageRange: { type: String },
     personality: { type: String },
     relationshipType: { type: String },
   },
