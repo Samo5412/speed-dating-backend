@@ -1,0 +1,98 @@
+# Events API Endpoints
+@baseUrl = http://localhost:3000/api/v1
+
+### Create an organizer user
+// Expected HTTP response status code: 201
+// Expected response: a user object (json)
+# @name createOrganizer
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+    "email": "organizer@example.com",
+    "password": "password123",
+    "role": "organizer"
+}
+
+### Create a participant user
+// Expected HTTP response status code: 201
+// Expected response: a user object (json)
+# @name createParticipant
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+    "email": "eventParticipant@example.com",
+    "password": "password123",
+    "role": "participant"
+}
+
+### Store the user IDs as variables
+@organizerId = {{createOrganizer.response.body._id}}
+@participantId = {{createParticipant.response.body._id}}
+
+### Create a new event
+// Expected HTTP response status code: 201
+// Expected response: the created event object (json)
+# @name createEvent
+POST {{baseUrl}}/events
+Content-Type: application/json
+
+{
+    "name": "Speed Dating Night",
+    "organizer": "{{organizerId}}",
+    "participants": [],
+    "startDateTime": "2025-03-01 18:00",
+    "endDateTime": "2025-03-01 21:00",
+    "location": "Vasastan, Stockholm",
+    "description": "A fun evening of speed dating!",
+    "maximumParticipants": 20,
+    "isEventActive": false,
+    "registrationDeadline": "2025-02-28 23:59",
+    "nextRound": {
+        "roundNumber": 1,
+        "isRoundActive": false,
+        "startTime": "2025-03-01 18:00",
+        "endTime": "2025-03-01 18:15"
+    }
+}
+
+### Store the event ID
+@eventId = {{createEvent.response.body._id}}
+
+### Get all events
+// Expected HTTP response status code: 200
+// Expected response: an array of event objects (json)
+GET {{baseUrl}}/events
+
+### Get specific event
+// Expected HTTP response status code: 200
+// Expected response: an event object (json)
+GET {{baseUrl}}/events/{{eventId}}
+
+### Update event
+// Expected HTTP response status code: 200
+// Expected response: the updated event object (json)
+PUT {{baseUrl}}/events/{{eventId}}
+Content-Type: application/json
+
+{
+    "name": "Updated Speed Dating Night",
+    "description": "An updated fun evening of speed dating!",
+    "maximumParticipants": 30
+}
+
+### Delete event
+// Expected HTTP response status code: 200
+// Expected response: "Event deleted"
+DELETE {{baseUrl}}/events/{{eventId}}
+
+### Delete the participant user
+// Expected HTTP response status code: 200
+// Expected response: "User deleted"
+DELETE {{baseUrl}}/users/{{participantId}}
+
+### Delete the organizer user
+// Expected HTTP response status code: 200
+// Expected response: "User deleted"
+DELETE {{baseUrl}}/users/{{organizerId}}
