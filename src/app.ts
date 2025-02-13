@@ -9,6 +9,7 @@ import rateLimit from "express-rate-limit";
 import { usersRouter } from "./routes/users.js";
 import { reviewsRouter } from "./routes/reviews.js";
 import { userProfilesRouter } from "./routes/userProfiles.js";
+import { eventsRouter } from "./routes/events.js";
 
 dotenv.config();
 
@@ -90,6 +91,7 @@ const api_path = process.env.API_PATH || "";
 app.use(`${api_path}/users`, usersRouter);
 app.use(`${api_path}/reviews`, reviewsRouter);
 app.use(`${api_path}/userProfiles`, userProfilesRouter);
+app.use(`${api_path}/events`, eventsRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
