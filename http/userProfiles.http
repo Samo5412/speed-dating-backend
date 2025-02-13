@@ -1,0 +1,99 @@
+# User Profiles API Endpoints
+@baseUrl = http://localhost:3000/api/v1
+
+###############################################
+// User Creation Endpoint
+###############################################
+
+### Create a test user first
+// Expected HTTP response status code: 201
+// Expected response: a user object (json)
+# @name createUser
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+    "email": "profileuser4@example.com",
+    "password": "password123",
+    "role": "participant"
+}
+
+###############################################
+
+### Store the user ID as variable
+@userId = {{createUser.response.body._id}}
+
+###############################################
+// Profile Management Endpoints
+###############################################
+
+### Create a new profile for the user
+// Expected HTTP response status code: 201
+// Expected response: the created profile object (json)
+# @name createProfile
+POST {{baseUrl}}/userProfiles
+Content-Type: application/json
+
+{
+    "userId": "{{userId}}",
+    "fullName": "John Doe",
+    "dateOfBirth": "1990-01-01",
+    "gender": "man",
+    "phoneNumber": "0701234567",
+    "occupation": "Software Developer",
+    "bio": "A short bio about me",
+    "interests": ["coding", "hiking"],
+    "lookingFor": {
+        "ageRange": "25-45",
+        "personality": "outgoing",
+        "relationshipType": "long-term"
+    }
+}
+
+### Store the profile ID
+@profileId = {{createProfile.response.body.userId}}
+
+###############################################
+
+### Get all profiles
+// Expected HTTP response status code: 200
+// Expected response: an array (json) with all profiles
+GET {{baseUrl}}/userProfiles
+
+###############################################
+
+### Get specific profile
+// Expected HTTP response status code: 200
+// Expected response: a profile object (json)
+GET {{baseUrl}}/userProfiles/{{profileId}}
+
+###############################################
+
+### Update profile
+// Expected HTTP response status code: 200
+// Expected response: the updated profile object (json)
+PUT {{baseUrl}}/userProfiles/{{profileId}}
+Content-Type: application/json
+
+{
+    "userId": "{{userId}}",
+    "fullName": "John Doe Updated",
+    "bio": "Updated bio",
+    "interests": ["coding", "hiking", "gaming"]
+}
+
+###############################################
+
+### Delete the profile
+// Expected HTTP response status code: 200
+// Expected response: "Profile deleted"
+DELETE {{baseUrl}}/userProfiles/{{profileId}}
+
+###############################################
+// Cleanup Endpoints
+###############################################
+
+### Delete the user
+// Expected HTTP response status code: 200
+// Expected response: "User deleted"
+DELETE {{baseUrl}}/users/{{userId}}
