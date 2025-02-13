@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { UserProfile } from "../models/UserProfile.js";
+import { MESSAGES } from "../constants/messages.js";
 
 export const createProfile = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -26,7 +27,7 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
     if (profile) {
       res.json(profile);
     } else {
-      res.status(404).json({ message: "Profile not found" });
+      res.status(404).json({ message: MESSAGES.PROFILE.NOT_FOUND });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -43,7 +44,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
     if (profile) {
       res.json(profile);
     } else {
-      res.status(404).json({ message: "Profile not found" });
+      res.status(404).json({ message: MESSAGES.PROFILE.NOT_FOUND });
     }
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -54,9 +55,9 @@ export const deleteProfile = async (req: Request, res: Response): Promise<void> 
   try {
     const profile = await UserProfile.findOneAndDelete({ userId: req.params.userId });
     if (profile) {
-      res.json({ message: "Profile deleted" });
+      res.json({ message: MESSAGES.PROFILE.DELETED });
     } else {
-      res.status(404).json({ message: "Profile not found" });
+      res.status(404).json({ message: MESSAGES.PROFILE.NOT_FOUND });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });

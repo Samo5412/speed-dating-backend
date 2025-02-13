@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Review } from "../models/Review.js";
+import { MESSAGES } from "../constants/messages.js";
 
 export const createReview = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -26,7 +27,7 @@ export const getReview = async (req: Request, res: Response): Promise<void> => {
     if (review) {
       res.json(review);
     } else {
-      res.status(404).json({ message: "Review not found" });
+      res.status(404).json({ message: MESSAGES.REVIEW.NOT_FOUND });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -39,7 +40,7 @@ export const updateReview = async (req: Request, res: Response): Promise<void> =
     if (review) {
       res.json(review);
     } else {
-      res.status(404).json({ message: "Review not found" });
+      res.status(404).json({ message: MESSAGES.REVIEW.NOT_FOUND });
     }
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -50,9 +51,9 @@ export const deleteReview = async (req: Request, res: Response): Promise<void> =
   try {
     const review = await Review.findByIdAndDelete(req.params.id);
     if (review) {
-      res.json({ message: "Review deleted" });
+      res.json({ message: MESSAGES.REVIEW.DELETED });
     } else {
-      res.status(404).json({ message: "Review not found" });
+      res.status(404).json({ message: MESSAGES.REVIEW.NOT_FOUND });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });

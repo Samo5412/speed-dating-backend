@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { User } from "../models/User.js";
+import { MESSAGES } from "../constants/messages.js";
 
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -26,7 +27,7 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
     if (user) {
       res.json(user);
     } else {
-      res.status(404).json({ message: "User not found" });
+      res.status(404).json({ message: MESSAGES.USER.NOT_FOUND });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -39,7 +40,7 @@ export const updateUserById = async (req: Request, res: Response): Promise<void>
     if (user) {
       res.json(user);
     } else {
-      res.status(404).json({ message: "User not found" });
+      res.status(404).json({ message: MESSAGES.USER.NOT_FOUND });
     }
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -50,9 +51,9 @@ export const deleteUserById = async (req: Request, res: Response): Promise<void>
   try {
     const user = await User.findByIdAndDelete(req.params.userId);
     if (user) {
-      res.json({ message: "User deleted" });
+      res.json({ message: MESSAGES.USER.DELETED });
     } else {
-      res.status(404).json({ message: "User not found" });
+      res.status(404).json({ message: MESSAGES.USER.NOT_FOUND });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
