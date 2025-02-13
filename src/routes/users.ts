@@ -17,5 +17,6 @@ router.put("/:userId", updateUserById);
 router.delete("/:userId", deleteUserById);
 
 // TODO: Add Rate limiting with rateLimit from express-rate-limit
+// TODO: Add authorization to access these routes
 
 export const usersRouter = router;
