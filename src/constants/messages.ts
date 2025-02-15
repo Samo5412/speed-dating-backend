@@ -40,5 +40,12 @@ export const MESSAGES = {
             NO_ACTIVE_ROUND: "No active round to end",
             MUST_BE_ACTIVE_FOR_ROUND: "Event must be active to end a round"
         }
+    },
+
+    // Shared Contact related messages
+    SHARED_CONTACT: {
+        CONTACT_NOT_FOUND: "Contact user not found",
+        ALREADY_EXISTS: "Contact already exists",
+        NOT_FOUND: "Shared contact not found"
     }
 } as const;
