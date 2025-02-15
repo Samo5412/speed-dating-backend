@@ -82,6 +82,60 @@ Content-Type: application/json
     "maximumParticipants": 30
 }
 
+### Register participant for event
+// Expected HTTP response status code: 200
+// Expected response: the updated event object with new participant (json)
+POST {{baseUrl}}/events/register/{{eventId}}
+Content-Type: application/json
+
+{
+    "userId": "{{participantId}}"
+}
+
+### Register another participant for event
+// Expected HTTP response status code: 200
+// Expected response: the updated event object with two registered participants (json)
+POST {{baseUrl}}/events/register/{{eventId}}
+Content-Type: application/json
+
+{
+    "userId": "{{organizerId}}"
+}
+
+### Remove a participant from an event
+// Expected HTTP response status code: 200
+// Expected response: the updated event object with one less registered participant (json)
+DELETE {{baseUrl}}/events/register/{{eventId}}
+Content-Type: application/json
+
+{
+    "userId": "{{participantId}}"
+}
+
+### Start event
+// Expected HTTP response status code: 200
+// Expected response: the updated event object with isEventActive true
+POST {{baseUrl}}/events/{{eventId}}/start
+Content-Type: application/json
+
+### Start next round
+// Expected HTTP response status code: 200
+// Expected response: the updated event object with roundNumber set to 2
+POST {{baseUrl}}/events/{{eventId}}/nextRound
+Content-Type: application/json
+
+### End current round
+// Expected HTTP response status code: 200
+// Expected response: the updated event object with isRoundActive to false
+POST {{baseUrl}}/events/{{eventId}}/endRound
+Content-Type: application/json
+
+### End event
+// Expected HTTP response status code: 200
+// Expected response: the updated event object with isEventActive false
+POST {{baseUrl}}/events/{{eventId}}/end
+Content-Type: application/json
+
 ### Delete event
 // Expected HTTP response status code: 200
 // Expected response: "Event deleted"
