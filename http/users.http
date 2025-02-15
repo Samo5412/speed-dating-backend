@@ -6,7 +6,7 @@
 // Expected HTTP response status code: 201
 // Expected response: a user object (json)
 # @name createUser
-POST {{baseUrl}}/users HTTP/1.1
+POST {{baseUrl}}/users
 Content-Type: application/json
 
 {
@@ -22,9 +22,19 @@ Content-Type: application/json
 
 ###
 
+### Update the created user by email
+// Expected HTTP response status code: 200
+# @name updateUserByEmail
+PUT {{baseUrl}}/users/email/{{userEmail}}
+Content-Type: application/json
+
+{
+    "email": "updatedUsingEmail@example.com"
+}
+
 ### Update the created user by id
 // Expected HTTP response status code: 200
-# @name updateUser
+# @name updateUserById
 PUT {{baseUrl}}/users/{{userId}}
 Content-Type: application/json
 
@@ -38,12 +48,50 @@ Content-Type: application/json
 // Expected response: a user object (json)
 GET {{baseUrl}}/users/{{userId}}
 
-### Delete the user
+### Add a shared contact
+// Expected HTTP response status code: 201
+// Expected response: created shared contact object
+# @name addSharedContact
+POST {{baseUrl}}/users/{{userId}}/shared-contacts
+Content-Type: application/json
+
+{
+    "contactId": "65cd1234abcd1234abcd1234",
+    "status": "pending"
+}
+
+###
+
+@sharedContactId = {{addSharedContact.response.body._id}}
+
+### Get all shared contacts for a user
 // Expected HTTP response status code: 200
-DELETE {{baseUrl}}/users/{{userId}}
+// Expected response: array of shared contacts
+GET {{baseUrl}}/users/{{userId}}/shared-contacts
+
+###
+
+### Get a specific shared contact
+// Expected HTTP response status code: 200
+// Expected response: shared contact object
+GET {{baseUrl}}/users/{{userId}}/shared-contacts/{{sharedContactId}}
+
+### Update a shared contact
+// Expected HTTP response status code: 200
+// Expected response: updated shared contact object
+PUT {{baseUrl}}/users/{{userId}}/shared-contacts/{{sharedContactId}}
+Content-Type: application/json
+
+{
+    "status": "accepted"
+}
 
 ### Get all users
 // Test: Get all users
 // Expected HTTP response status code: 200
 // Expected response: an array (json) with all users
 GET {{baseUrl}}/users
+
+### Delete the user
+// Expected HTTP response status code: 200
+DELETE {{baseUrl}}/users/{{userId}}
