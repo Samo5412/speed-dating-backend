@@ -10,7 +10,7 @@ import {
   startEvent,
   endEvent,
   startNextRound,
-  endCurrentRound
+  endCurrentRound,
 } from "../controllers/events.js";
 
 const router: Router = express.Router();
@@ -21,9 +21,12 @@ router.post("/:eventId/start", startEvent);
 router.post("/:eventId/end", endEvent);
 router.post("/:eventId/nextRound", startNextRound);
 router.post("/:eventId/endRound", endCurrentRound);
+
 router.get("/", getEvents);
 router.get("/:eventId", getEvent);
+
 router.put("/:eventId", updateEvent);
+
 router.delete("/:eventId", deleteEvent);
 router.delete("/register/:eventId", unregisterParticipantFromEvent);
 
