@@ -5,14 +5,26 @@ import {
   getAllUsers,
   updateUserById,
   deleteUserById,
+  updateUserByEmail,
+  addSharedContact,
+  getAllSharedContactsForUser,
+  getSharedContactByContactId,
+  updateSharedContact,
 } from "../controllers/users.js";
 
 const router: Router = express.Router();
 
 router.post("/", createUser);
+router.post("/:userId/shared-contacts", addSharedContact);
+
 router.get("/", getAllUsers);
 router.get("/:userId", getUserById);
+router.get("/:userId/shared-contacts", getAllSharedContactsForUser);
+router.get("/:userId/shared-contacts/:contactId", getSharedContactByContactId);
+
 router.put("/:userId", updateUserById);
+router.put("/email/:userEmail", updateUserByEmail);
+router.put("/:userId/shared-contacts/:contactId", updateSharedContact);
 
 router.delete("/:userId", deleteUserById);
 
