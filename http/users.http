@@ -80,6 +80,35 @@ Content-Type: application/json
 
 @addedContactId = {{addSharedContact.response.body.contact}}
 
+### Create a third user to add as another shared contact
+// Expected HTTP response status code: 201
+// Expected response: a user object (json)
+# @name createSecondSharedContactUser
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+    "email": "sharedContact2@example.com",
+    "password": "password123",
+    "role": "participant"
+}
+
+###
+
+@secondSharedContactId = {{createSecondSharedContactUser.response.body._id}}
+
+
+### Add the second shared contact
+// Expected HTTP response status code: 201
+// Expected response: created shared contact object
+# @name addSecondSharedContact
+POST {{baseUrl}}/users/{{userId}}/shared-contacts
+Content-Type: application/json
+
+{
+    "contactId": "{{secondSharedContactId}}"
+}
+
 ### Get all shared contacts for a user
 // Expected HTTP response status code: 200
 // Expected response: array of shared contacts
@@ -108,6 +137,15 @@ Content-Type: application/json
 // Expected response: an array (json) with all users
 GET {{baseUrl}}/users
 
+### Remove a shared contact
+// Expected HTTP response status code: 200
+DELETE {{baseUrl}}/users/{{userId}}/shared-contacts/{{sharedContactId}}
+
+### Remove a not existing shared contact
+// Expected HTTP response status code: 404
+DELETE {{baseUrl}}/users/{{userId}}/shared-contacts/67b0a9bec6f8a15f513ed713
+
+
 ### Delete the user
 // Expected HTTP response status code: 200
 DELETE {{baseUrl}}/users/{{userId}}
@@ -115,3 +153,7 @@ DELETE {{baseUrl}}/users/{{userId}}
 ### Delete the shared contact user
 // Expected HTTP response status code: 200
 DELETE {{baseUrl}}/users/{{sharedContactId}}
+
+### Delete the second shared contact user
+// Expected HTTP response status code: 200
+DELETE {{baseUrl}}/users/{{secondSharedContactId}}
