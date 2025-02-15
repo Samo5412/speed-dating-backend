@@ -46,6 +46,7 @@ export const MESSAGES = {
     SHARED_CONTACT: {
         CONTACT_NOT_FOUND: "Contact user not found",
         ALREADY_EXISTS: "Contact already exists",
-        NOT_FOUND: "Shared contact not found"
+        NOT_FOUND: "Shared contact not found",
+        DELETED: "Shared contact deleted"
     }
 } as const;
