@@ -103,6 +103,153 @@ export const registerParticipantOnEvent = async (
   }
 };
 
+export const startEvent = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const event = await Event.findById(req.params.eventId);
+    if (!event) {
+      res.status(404).json({ message: MESSAGES.EVENT.NOT_FOUND });
+      return;
+    }
+
+    // Check if event is already active
+    if (event.isEventActive) {
+      res
+        .status(400)
+        .json({ message: MESSAGES.EVENT.MANAGEMENT.ALREADY_ACTIVE });
+      return;
+    }
+
+    event.isEventActive = true;
+    event.nextRound = {
+      roundNumber: 1,
+      isRoundActive: false,
+      startTime: event.startDateTime,
+      // TODO: endTime is set to 15 minutes later. Will probably need to be changed.
+      endTime: new Date(new Date(event.startDateTime).getTime() + 15 * 60000),
+    };
+
+    const updatedEvent = await event.save();
+    res.json(updatedEvent);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const endEvent = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const event = await Event.findById(req.params.eventId);
+    if (!event) {
+      res.status(404).json({ message: MESSAGES.EVENT.NOT_FOUND });
+      return;
+    }
+
+    // We only want to end an active event
+    if (!event.isEventActive) {
+      res.status(400).json({ message: MESSAGES.EVENT.MANAGEMENT.NOT_ACTIVE });
+      return;
+    }
+
+    event.isEventActive = false;
+    if (event.nextRound) {
+      event.nextRound.isRoundActive = false;
+    }
+
+    const updatedEvent = await event.save();
+    res.json(updatedEvent);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const startNextRound = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const event = await Event.findById(req.params.eventId);
+    if (!event) {
+      res.status(404).json({ message: MESSAGES.EVENT.NOT_FOUND });
+      return;
+    }
+
+    // We only start the the next round if the event is active
+    if (!event.isEventActive) {
+      res
+        .status(400)
+        .json({ message: MESSAGES.EVENT.MANAGEMENT.MUST_BE_ACTIVE });
+      return;
+    }
+
+    // We only start the next round if the current one is not active
+    if (event.nextRound?.isRoundActive) {
+      res.status(400).json({ message: MESSAGES.EVENT.MANAGEMENT.ROUND_ACTIVE });
+      return;
+    }
+
+    // The maximum number of rounds is 3
+    const currentRoundNumber = event.nextRound?.roundNumber || 0;
+    if (currentRoundNumber >= 3) {
+      res.status(400).json({ message: MESSAGES.EVENT.MANAGEMENT.MAX_ROUNDS });
+      return;
+    }
+
+    // Calculate new round times
+    const startTime = new Date();
+    // TODO: endTime is set to 15 minutes later. Will probably need to be changed.
+    const endTime = new Date(startTime.getTime() + 15 * 60000);
+
+    event.nextRound = {
+      roundNumber: currentRoundNumber + 1,
+      isRoundActive: true,
+      startTime,
+      endTime,
+    };
+
+    const updatedEvent = await event.save();
+    res.json(updatedEvent);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const endCurrentRound = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const event = await Event.findById(req.params.eventId);
+    if (!event) {
+      res.status(404).json({ message: MESSAGES.EVENT.NOT_FOUND });
+      return;
+    }
+
+    // We only end the current round if the event is active
+    if (!event.isEventActive) {
+      res
+        .status(400)
+        .json({ message: MESSAGES.EVENT.MANAGEMENT.MUST_BE_ACTIVE_FOR_ROUND });
+      return;
+    }
+
+    // We can only end the current round if one is active
+    if (!event.nextRound?.isRoundActive) {
+      res
+        .status(400)
+        .json({ message: MESSAGES.EVENT.MANAGEMENT.NO_ACTIVE_ROUND });
+      return;
+    }
+
+    event.nextRound.isRoundActive = false;
+    const updatedEvent = await event.save();
+    res.json(updatedEvent);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 export const deleteEvent = async (req: Request, res: Response): Promise<void> => {
   try {
     const event = await Event.findByIdAndDelete(req.params.eventId);

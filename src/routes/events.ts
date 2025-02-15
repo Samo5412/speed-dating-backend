@@ -7,12 +7,20 @@ import {
   deleteEvent,
   registerParticipantOnEvent,
   unregisterParticipantFromEvent,
+  startEvent,
+  endEvent,
+  startNextRound,
+  endCurrentRound
 } from "../controllers/events.js";
 
 const router: Router = express.Router();
 
 router.post("/", createEvent);
 router.post("/register/:eventId", registerParticipantOnEvent);
+router.post("/:eventId/start", startEvent);
+router.post("/:eventId/end", endEvent);
+router.post("/:eventId/nextRound", startNextRound);
+router.post("/:eventId/endRound", endCurrentRound);
 router.get("/", getEvents);
 router.get("/:eventId", getEvent);
 router.put("/:eventId", updateEvent);
