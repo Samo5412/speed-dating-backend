@@ -48,6 +48,23 @@ Content-Type: application/json
 // Expected response: a user object (json)
 GET {{baseUrl}}/users/{{userId}}
 
+### Create a new user to add as shared contact
+// Expected HTTP response status code: 201
+// Expected response: a user object (json)
+# @name createSharedContactUser
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+    "email": "sharedContact@example.com",
+    "password": "password123",
+    "role": "participant"
+}
+
+###
+
+@sharedContactId = {{createSharedContactUser.response.body._id}}
+
 ### Add a shared contact
 // Expected HTTP response status code: 201
 // Expected response: created shared contact object
@@ -56,13 +73,12 @@ POST {{baseUrl}}/users/{{userId}}/shared-contacts
 Content-Type: application/json
 
 {
-    "contactId": "65cd1234abcd1234abcd1234",
-    "status": "pending"
+    "contactId": "{{sharedContactId}}"
 }
 
 ###
 
-@sharedContactId = {{addSharedContact.response.body._id}}
+@addedContactId = {{addSharedContact.response.body.contact}}
 
 ### Get all shared contacts for a user
 // Expected HTTP response status code: 200
@@ -95,3 +111,7 @@ GET {{baseUrl}}/users
 ### Delete the user
 // Expected HTTP response status code: 200
 DELETE {{baseUrl}}/users/{{userId}}
+
+### Delete the shared contact user
+// Expected HTTP response status code: 200
+DELETE {{baseUrl}}/users/{{sharedContactId}}
