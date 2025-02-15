@@ -25,7 +25,7 @@ const UserSchema = new mongoose.Schema({
       createdAt: { type: Date, default: Date.now },
     },
   ],
-  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
+  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }], // TODO: This field can probably be removed
   notifications: [
     {
       message: { type: String, required: true },
