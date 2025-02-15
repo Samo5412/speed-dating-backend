@@ -10,6 +10,7 @@ import {
   getAllSharedContactsForUser,
   getSharedContactByContactId,
   updateSharedContact,
+  deleteSharedContact
 } from "../controllers/users.js";
 
 const router: Router = express.Router();
@@ -27,6 +28,7 @@ router.put("/email/:userEmail", updateUserByEmail);
 router.put("/:userId/shared-contacts/:contactId", updateSharedContact);
 
 router.delete("/:userId", deleteUserById);
+router.delete("/:userId/shared-contacts/:contactId", deleteSharedContact);
 
 // TODO: Add Rate limiting with rateLimit from express-rate-limit
 // TODO: Add authorization to access these routes

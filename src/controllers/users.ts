@@ -223,3 +223,43 @@ export const updateSharedContact = async (
     res.status(400).json({ message: error.message });
   }
 };
+
+export const deleteSharedContact = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      res.status(404).json({ message: MESSAGES.USER.NOT_FOUND });
+      return;
+    }
+
+    const contactUser = await User.findById(req.params.contactId);
+    if (!contactUser) {
+      res
+        .status(404)
+        .json({ message: MESSAGES.SHARED_CONTACT.CONTACT_NOT_FOUND });
+      return;
+    }
+
+    // Check if contact exists as a shared contact
+    const existingContact = user.sharedContacts.find(
+      (contact) => contact.contactId.toString() === contactUser._id.toString()
+    );
+    if (!existingContact) {
+      res.status(404).json({ message: MESSAGES.SHARED_CONTACT.NOT_FOUND });
+      return;
+    }
+
+    // Remove contact from shared contacts
+    const contactIndex = user.sharedContacts.findIndex(
+      (contact) => contact.contactId.toString() === contactUser._id.toString()
+    );
+    user.sharedContacts.splice(contactIndex, 1);
+    await user.save();
+    res.json({ message: MESSAGES.SHARED_CONTACT.DELETED });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};    
