@@ -15,7 +15,7 @@ const UserSchema = new mongoose.Schema({
   sharedContacts: [
     {
       // contact references User B (not this user).
-      contact: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      contactId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
       // status represents User A's (this user's) response.
       status: {
         type: String,
