@@ -6,10 +6,15 @@ import {
   updateUserById,
   deleteUserById,
 } from "../controllers/users.js";
+import { login, logout, register } from "../auth/auth.js";
 
 const router: Router = express.Router();
 
-router.post("/", createUser);
+// router.post("/", createUser);
+
+router.post("/register", register);
+router.post("/login", login);
+router.post("/logout", logout);
 router.get("/", getAllUsers);
 router.get("/:userId", getUserById);
 router.put("/:userId", updateUserById);
