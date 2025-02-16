@@ -18,14 +18,41 @@ Content-Type: application/json
     "role": "participant"
 }
 
+### Create another test user
+// Expected HTTP response status code: 201
+// Expected response: a user object (json)
+# @name createSecondUser
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+    "email": "profileuser5@example.com",
+    "password": "password123",
+    "role": "participant"
+}
+
 ###############################################
 
-### Store the user ID as variable
+### Store the user IDs as variables
 @userId = {{createUser.response.body._id}}
+@secondUserId = {{createSecondUser.response.body._id}}
 
 ###############################################
 // Profile Management Endpoints
 ###############################################
+
+### Try to create profile with non-existent user ID
+// Expected HTTP response status code: 404
+// Expected response: "User not found" error
+POST {{baseUrl}}/userProfiles
+Content-Type: application/json
+
+{
+    "userId": "65cccccccccccccccccccccc",
+    "fullName": "This user does not exist",
+    "dateOfBirth": "2000-01-01",
+    "gender": "man"
+}
 
 ### Create a new profile for the user
 // Expected HTTP response status code: 201
@@ -36,12 +63,12 @@ Content-Type: application/json
 
 {
     "userId": "{{userId}}",
-    "fullName": "John Doe",
-    "dateOfBirth": "1990-01-01",
+    "fullName": "Test Name1",
+    "dateOfBirth": "2001-01-01",
     "gender": "man",
-    "phoneNumber": "0701234567",
+    "phoneNumber": "0761234567",
     "occupation": "Software Developer",
-    "bio": "A short bio about me",
+    "bio": "A short bio",
     "interests": ["coding", "hiking"],
     "lookingFor": {
         "ageRange": "25-45",
@@ -50,8 +77,36 @@ Content-Type: application/json
     }
 }
 
-### Store the profile ID
+### Try to create a second profile for the same user
+// Expected HTTP response status code: 400
+// Expected response: "User already has a profile" error
+POST {{baseUrl}}/userProfiles
+Content-Type: application/json
+
+{
+    "userId": "{{userId}}",
+    "fullName": "Test Users Second Profile",
+    "gender": "man"
+}
+
+### Create a profile for the second user
+// Expected HTTP response status code: 201
+// Expected response: the created profile object (json)
+# @name createSecondProfile
+POST {{baseUrl}}/userProfiles
+Content-Type: application/json
+
+{
+    "userId": "{{secondUserId}}",
+    "fullName": "Test User2",
+    "dateOfBirth": "1992-01-01",
+    "gender": "woman",
+    "interests": ["reading", "travel"]
+}
+
+### Store the profile IDs
 @profileId = {{createProfile.response.body.userId}}
+@secondProfileId = {{createSecondProfile.response.body.userId}}
 
 ###############################################
 
@@ -67,6 +122,11 @@ GET {{baseUrl}}/userProfiles
 // Expected response: a profile object (json)
 GET {{baseUrl}}/userProfiles/{{profileId}}
 
+### Try to get non-existent profile
+// Expected HTTP response status code: 404
+// Expected response: "Profile not found" error
+GET {{baseUrl}}/userProfiles/65cccccccccccccccccccccc
+
 ###############################################
 
 ### Update profile
@@ -77,9 +137,20 @@ Content-Type: application/json
 
 {
     "userId": "{{userId}}",
-    "fullName": "John Doe Updated",
+    "fullName": "Test Name1 Updated",
     "bio": "Updated bio",
     "interests": ["coding", "hiking", "gaming"]
+}
+
+### Try to update non-existent profile
+// Expected HTTP response status code: 404
+// Expected response: "Profile not found" error
+PUT {{baseUrl}}/userProfiles/65cccccccccccccccccccccc
+Content-Type: application/json
+
+{
+    "fullName": "Not Found User",
+    "bio": "This should fail"
 }
 
 ###############################################
@@ -89,11 +160,26 @@ Content-Type: application/json
 // Expected response: "Profile deleted"
 DELETE {{baseUrl}}/userProfiles/{{profileId}}
 
+### Try to delete already deleted profile
+// Expected HTTP response status code: 404
+// Expected response: "Profile not found" error
+DELETE {{baseUrl}}/userProfiles/{{profileId}}
+
+### Delete the second profile
+// Expected HTTP response status code: 200
+// Expected response: "Profile deleted"
+DELETE {{baseUrl}}/userProfiles/{{secondProfileId}}
+
 ###############################################
 // Cleanup Endpoints
 ###############################################
 
-### Delete the user
+### Delete the first user
 // Expected HTTP response status code: 200
 // Expected response: "User deleted"
 DELETE {{baseUrl}}/users/{{userId}}
+
+### Delete the second user
+// Expected HTTP response status code: 200
+// Expected response: "User deleted"
+DELETE {{baseUrl}}/users/{{secondUserId}}
