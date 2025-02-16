@@ -1,4 +1,11 @@
 export const MESSAGES = {
+
+    // Register related messages
+    REGISTER: {
+        USER_EXISTS: "User already exists",
+        MISSING_CREDENTIALS: "Email and password are required",
+        USER_CREATED: "User created successfully"
+    },
     // User related messages
     USER: {
         NOT_FOUND: "User not found",
