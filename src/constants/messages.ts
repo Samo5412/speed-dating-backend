@@ -12,7 +12,7 @@ export const MESSAGES = {
         INVALID_CREDENTIALS: "Invalid credentials",
         MISSING_CREDENTIALS: "Email and password are required",
         LOGIN_SUCCESSFUL: "Login successful"
-    }
+    },
     // User related messages
     USER: {
         NOT_FOUND: "User not found",
