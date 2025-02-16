@@ -6,6 +6,13 @@ export const MESSAGES = {
         MISSING_CREDENTIALS: "Email and password are required",
         USER_CREATED: "User created successfully"
     },
+
+    // Login related messages
+    LOGIN: {
+        INVALID_CREDENTIALS: "Invalid credentials",
+        MISSING_CREDENTIALS: "Email and password are required",
+        LOGIN_SUCCESSFUL: "Login successful"
+    }
     // User related messages
     USER: {
         NOT_FOUND: "User not found",
