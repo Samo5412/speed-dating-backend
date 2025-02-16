@@ -23,7 +23,7 @@ export const getReviews = async (req: Request, res: Response): Promise<void> => 
 
 export const getReview = async (req: Request, res: Response): Promise<void> => {
   try {
-    const review = await Review.findById(req.params.id);
+    const review = await Review.findById(req.params.reviewId);
     if (review) {
       res.json(review);
     } else {
@@ -36,7 +36,7 @@ export const getReview = async (req: Request, res: Response): Promise<void> => {
 
 export const updateReview = async (req: Request, res: Response): Promise<void> => {
   try {
-    const review = await Review.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const review = await Review.findByIdAndUpdate(req.params.reviewId, req.body, { new: true });
     if (review) {
       res.json(review);
     } else {
@@ -49,7 +49,7 @@ export const updateReview = async (req: Request, res: Response): Promise<void> =
 
 export const deleteReview = async (req: Request, res: Response): Promise<void> => {
   try {
-    const review = await Review.findByIdAndDelete(req.params.id);
+    const review = await Review.findByIdAndDelete(req.params.reviewId);
     if (review) {
       res.json({ message: MESSAGES.REVIEW.DELETED });
     } else {
