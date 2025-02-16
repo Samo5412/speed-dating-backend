@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 import { ALLOWED_ROLES } from "../models/User.js";
 
 export type UserType = {
+    _id: Types.ObjectId;
 	email: string;
 	password?: string;
 	salt?: string;
