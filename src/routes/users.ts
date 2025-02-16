@@ -10,7 +10,11 @@ import {
   getAllSharedContactsForUser,
   getSharedContactByContactId,
   updateSharedContact,
-  deleteSharedContact
+  deleteSharedContact,
+  getUserNotifications,
+  markNotificationAsRead,
+  deleteNotification,
+  createNotification
 } from "../controllers/users.js";
 
 const router: Router = express.Router();
@@ -29,6 +33,12 @@ router.put("/:userId/shared-contacts/:contactId", updateSharedContact);
 
 router.delete("/:userId", deleteUserById);
 router.delete("/:userId/shared-contacts/:contactId", deleteSharedContact);
+
+// Notification routes
+router.post("/:userId/notifications", createNotification);
+router.get("/:userId/notifications", getUserNotifications);
+router.put("/:userId/notifications/:notificationId/read", markNotificationAsRead);
+router.delete("/:userId/notifications/:notificationId", deleteNotification);
 
 // TODO: Add Rate limiting with rateLimit from express-rate-limit
 // TODO: Add authorization to access these routes

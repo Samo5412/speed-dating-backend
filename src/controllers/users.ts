@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { User } from "../models/User.js";
-import { UserProfile } from "../models/UserProfile.js"; // Import UserProfile model
+import { UserProfile } from "../models/UserProfile.js";
 import { MESSAGES } from "../constants/messages.js";
 
 export const createUser = async (
@@ -271,4 +271,126 @@ export const deleteSharedContact = async (
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-};    
+};
+
+export const createNotification = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { userId } = req.params;
+    const { message } = req.body;
+
+    if (!message) {
+      res.status(400).json({ message: MESSAGES.NOTIFICATION.MESSAGE_REQUIRED });
+      return;
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ message: MESSAGES.USER.NOT_FOUND });
+      return;
+    }
+
+    const notification = {
+      message,
+      isRead: false,
+      createdAt: new Date(),
+    };
+
+    if (!user.notifications) {
+      user.$set("notifications", []);
+    }
+
+    user.notifications.push(notification);
+    await user.save();
+
+    // We want to send the _id with the response
+    const createdNotification =
+      user.notifications[user.notifications.length - 1];
+
+    res.status(201).json(createdNotification);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getUserNotifications = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      res.status(404).json({ message: MESSAGES.USER.NOT_FOUND });
+      return;
+    }
+
+    const notifications = user.notifications || [];
+    res.json(notifications);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const markNotificationAsRead = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { userId, notificationId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ message: MESSAGES.USER.NOT_FOUND });
+      return;
+    }
+
+    // Check if notification exists
+    const notification = user.notifications?.find(
+      (n) => n._id.toString() === notificationId
+    );
+    if (!notification) {
+      res.status(404).json({ message: MESSAGES.NOTIFICATION.NOT_FOUND });
+      return;
+    }
+
+    notification.isRead = true;
+    await user.save();
+
+    res.json(notification);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteNotification = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { userId, notificationId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ message: MESSAGES.USER.NOT_FOUND });
+      return;
+    }
+
+    // Check if notification exists
+    const notificationIndex = user.notifications?.findIndex(
+      (n) => n._id.toString() === notificationId
+    );
+    if (notificationIndex === -1 || notificationIndex === undefined) {
+      res.status(404).json({ message: MESSAGES.NOTIFICATION.NOT_FOUND });
+      return;
+    }
+
+    user.notifications?.splice(notificationIndex, 1);
+    await user.save();
+
+    res.status(200).json({ message: MESSAGES.NOTIFICATION.DELETED });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
