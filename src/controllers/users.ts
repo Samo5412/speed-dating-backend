@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { User } from "../models/User.js";
+import { UserProfile } from "../models/UserProfile.js"; // Import UserProfile model
 import { MESSAGES } from "../constants/messages.js";
 
 export const createUser = async (
@@ -86,12 +87,20 @@ export const deleteUserById = async (
   res: Response
 ): Promise<void> => {
   try {
-    const user = await User.findByIdAndDelete(req.params.userId);
-    if (user) {
-      res.json({ message: MESSAGES.USER.DELETED });
-    } else {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
       res.status(404).json({ message: MESSAGES.USER.NOT_FOUND });
+      return;
     }
+
+    // Delete associated UserProfile if it exists
+    if (user.profile) {
+      await UserProfile.findByIdAndDelete(user.profile);
+    }
+
+    // Delete the user
+    await user.deleteOne();
+    res.json({ message: MESSAGES.USER.DELETED });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
