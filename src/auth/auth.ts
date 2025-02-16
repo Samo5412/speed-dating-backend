@@ -28,10 +28,14 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             res.status(400).json({ error: MESSAGES.REGISTER.USER_EXISTS });
 			return;
 		}
+        /** 
+         * Here we could let the user choose their role in the frontend, but for now we'll just set it to participant by default I guess.
+         */
+        const salt = rand();
 		const newUser = new User({
 			email: email,
-			salt: rand(),
-			password: auth(rand(), password),
+			salt: salt,
+			password: auth(salt, password),
 			role: ALLOWED_ROLES[1],
 		});
 
@@ -57,7 +61,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 		}
 		const user = await User.findOne({ email: email }).select(
 			"+password +salt"
-		);
+		).lean();
 		if (!user) {
             res.status(404).json({ error: MESSAGES.USER.NOT_FOUND });
 			return;
