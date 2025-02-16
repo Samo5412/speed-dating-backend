@@ -93,6 +93,20 @@ export const verify = async (
 	}
 };
 
+export const logout = (req: Request, res: Response) => {
+    try {
+        req.session.destroy((err) => {
+            if (err) {
+                return res.status(500).json({ error: MESSAGES.LOGOUT.LOGOUT_FAILED });
+            }
+            res.clearCookie('connect.sid');
+            return res.status(200).json({ message: MESSAGES.LOGOUT.LOGOUT_SUCCESSFUL });
+        });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
 export const rand = () => crypto.randomBytes(128).toString("base64");
 export const auth = (salt, pw) => {
 	return crypto

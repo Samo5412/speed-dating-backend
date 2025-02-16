@@ -13,6 +13,11 @@ export const MESSAGES = {
         MISSING_CREDENTIALS: "Email and password are required",
         LOGIN_SUCCESSFUL: "Login successful"
     },
+
+    LOGOUT: {
+        LOGOUT_SUCCESSFUL: "Logged out successfully",
+        LOGOUT_FAILED: "Failed to logout"
+    },
     // User related messages
     USER: {
         NOT_FOUND: "User not found",
