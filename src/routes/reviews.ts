@@ -12,10 +12,10 @@ const router: Router = express.Router();
 router.post("/", createReview);
 
 router.get("/", getReviews);
-router.get("/:reviewId", getReview);
+router.get("/:reviewerId", getReview);
 
-router.put("/:reviewId", updateReview);
+router.put("/:reviewerId", updateReview);
 
-router.delete("/:reviewId", deleteReview);
+router.delete("/:reviewerId", deleteReview);
 
 export const reviewsRouter = router;
