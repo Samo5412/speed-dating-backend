@@ -37,11 +37,15 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
-app.set("trust proxy", 1);
-
-const DB = process.env.DB_SERVER;
+let DB: string = "";
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+  DB = process.env.PROD_DB_SERVER;
+} else {
+  DB = process.env.DEV_DB_SERVER;
+}
 if (!DB) {
-  throw new Error("DB_SERVER is not defined in environment variables.");
+  throw new Error("DB SERVER is not defined in environment variables.");
 }
 mongoose
   .connect(DB)
