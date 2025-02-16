@@ -11,6 +11,7 @@ import {
   endEvent,
   startNextRound,
   endCurrentRound,
+  getEventsForUser
 } from "../controllers/events.js";
 
 const router: Router = express.Router();
@@ -23,6 +24,7 @@ router.post("/:eventId/nextRound", startNextRound);
 router.post("/:eventId/endRound", endCurrentRound);
 
 router.get("/", getEvents);
+router.get("/user/:userId", getEventsForUser);
 router.get("/:eventId", getEvent);
 
 router.put("/:eventId", updateEvent);

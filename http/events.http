@@ -102,6 +102,16 @@ Content-Type: application/json
     "userId": "{{organizerId}}"
 }
 
+### Get all events for the organizer
+// Expected HTTP response status code: 200
+// Expected response: array of events where the user is the organizer
+GET {{baseUrl}}/events/user/{{organizerId}}
+
+### Get all events for the participant
+// Expected HTTP response status code: 200
+// Expected response: array of events where the user is the participant
+GET {{baseUrl}}/events/user/{{participantId}}
+
 ### Remove a participant from an event
 // Expected HTTP response status code: 200
 // Expected response: the updated event object with one less registered participant (json)

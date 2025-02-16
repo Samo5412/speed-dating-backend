@@ -303,3 +303,21 @@ export const unregisterParticipantFromEvent = async (
     res.status(400).json({ message: error.message });
   }
 };
+
+export const getEventsForUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { userId } = req.params;
+    const events = await Event.find({
+      $or: [
+        { participants: userId },
+        { organizer: userId }
+      ]
+    });
+    res.json(events);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
