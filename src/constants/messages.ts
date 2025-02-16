@@ -48,5 +48,12 @@ export const MESSAGES = {
         ALREADY_EXISTS: "Contact already exists",
         NOT_FOUND: "Shared contact not found",
         DELETED: "Shared contact deleted"
+    },
+
+    // Notification related messages
+    NOTIFICATION: {
+        MESSAGE_REQUIRED: "Message is required",
+        NOT_FOUND: "Notification not found",
+        DELETED: "Notification deleted"
     }
 } as const;
