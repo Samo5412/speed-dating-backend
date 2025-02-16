@@ -7,6 +7,7 @@ import { UserProfile } from "../models/UserProfile.js";
 import crypto from "crypto";
 import { UserType } from "../types/userType.js";
 import { send } from "process";
+import { populate } from "dotenv";
 
 declare module "express-session" {
 	interface SessionData {
@@ -61,7 +62,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 		}
 		const user = await User.findOne({ email: email }).select(
 			"+password +salt"
-		).lean();
+		).populate("profile").lean();
 		if (!user) {
             res.status(404).json({ error: MESSAGES.USER.NOT_FOUND });
 			return;
