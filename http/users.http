@@ -48,6 +48,16 @@ Content-Type: application/json
 // Expected response: a user object (json)
 GET {{baseUrl}}/users/{{userId}}
 
+### Get all users
+// Test: Get all users
+// Expected HTTP response status code: 200
+// Expected response: an array (json) with all users
+GET {{baseUrl}}/users
+
+###############################################
+// Shared Contact Endpoints
+###############################################
+
 ### Create a new user to add as shared contact
 // Expected HTTP response status code: 201
 // Expected response: a user object (json)
@@ -97,7 +107,6 @@ Content-Type: application/json
 
 @secondSharedContactId = {{createSecondSharedContactUser.response.body._id}}
 
-
 ### Add the second shared contact
 // Expected HTTP response status code: 201
 // Expected response: created shared contact object
@@ -114,8 +123,6 @@ Content-Type: application/json
 // Expected response: array of shared contacts
 GET {{baseUrl}}/users/{{userId}}/shared-contacts
 
-###
-
 ### Get a specific shared contact
 // Expected HTTP response status code: 200
 // Expected response: shared contact object
@@ -131,12 +138,6 @@ Content-Type: application/json
     "status": "accepted"
 }
 
-### Get all users
-// Test: Get all users
-// Expected HTTP response status code: 200
-// Expected response: an array (json) with all users
-GET {{baseUrl}}/users
-
 ### Remove a shared contact
 // Expected HTTP response status code: 200
 DELETE {{baseUrl}}/users/{{userId}}/shared-contacts/{{sharedContactId}}
@@ -145,6 +146,43 @@ DELETE {{baseUrl}}/users/{{userId}}/shared-contacts/{{sharedContactId}}
 // Expected HTTP response status code: 404
 DELETE {{baseUrl}}/users/{{userId}}/shared-contacts/67b0a9bec6f8a15f513ed713
 
+###############################################
+// Notification Endpoints
+###############################################
+
+### Create a notification for user
+// Expected HTTP response status code: 201
+// Expected response: created notification object
+# @name createNotification
+POST {{baseUrl}}/users/{{userId}}/notifications
+Content-Type: application/json
+
+{
+    "message": "You have a new match with Bruce Lee!"
+}
+
+###
+
+@notificationId = {{createNotification.response.body._id}}
+
+### Get user notifications
+// Expected HTTP response status code: 200
+// Expected response: array of notifications
+GET {{baseUrl}}/users/{{userId}}/notifications
+
+### Mark notification as read
+// Expected HTTP response status code: 200
+// Expected response: updated notification object
+PUT {{baseUrl}}/users/{{userId}}/notifications/{{notificationId}}/read
+
+### Delete notification
+// Expected HTTP response status code: 200
+// Expected response: Notification deleted
+DELETE {{baseUrl}}/users/{{userId}}/notifications/{{notificationId}}
+
+###############################################
+// Clean up
+###############################################
 
 ### Delete the user
 // Expected HTTP response status code: 200
