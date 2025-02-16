@@ -13,20 +13,20 @@ declare module "express-session" {
 		user: UserType;
 	}
 }
-export const register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const { fullName, email, password } = req.body;
 		if (!email || !password) {
-			return res
-				.status(400)
-				.json({ error: MESSAGES.REGISTER.MISSING_CREDENTIALS });
+            res.status(400).json({
+				error: MESSAGES.REGISTER.MISSING_CREDENTIALS,
+			});
+			return;
 		}
 		const user = await User.findOne({ email: email });
 
 		if (user) {
-			return res
-				.status(400)
-				.json({ error: MESSAGES.REGISTER.USER_EXISTS });
+            res.status(400).json({ error: MESSAGES.REGISTER.USER_EXISTS });
+			return;
 		}
 		const newUser = new User({
 			email: email,
@@ -42,38 +42,35 @@ export const register = async (req: Request, res: Response) => {
 		newUser.profile = userProfile._id;
 		await newUser.save();
 		await userProfile.save();
-		return res
-			.status(201)
-			.json({ message: MESSAGES.REGISTER.USER_CREATED });
+        res.status(201).json({ message: MESSAGES.REGISTER.USER_CREATED });
 	} catch (error) {
-		return res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message });
 	}
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const { email, password } = req.body;
 		if (!email || !password) {
-			return res
-				.status(400)
-				.json({ error: MESSAGES.LOGIN.MISSING_CREDENTIALS });
+            res.status(400).json({ error: MESSAGES.LOGIN.MISSING_CREDENTIALS });
+			return;
 		}
 		const user = await User.findOne({ email: email }).select(
 			"+password +salt"
 		);
 		if (!user) {
-			return res.status(404).json({ error: MESSAGES.USER.NOT_FOUND });
+            res.status(404).json({ error: MESSAGES.USER.NOT_FOUND });
+			return;
 		}
 		if (user.password !== auth(user.salt, password)) {
-			return res
-				.status(401)
-				.json({ error: MESSAGES.LOGIN.INVALID_CREDENTIALS });
+            res.status(401).json({ error: MESSAGES.LOGIN.INVALID_CREDENTIALS });
+			return;
 		}
 		req.session.user = user;
 		const { password: _, salt: salt, ...userWithoutPassword } = user;
-		return res.status(200).send(userWithoutPassword);
+		res.status(200).send(userWithoutPassword);
 	} catch (error) {
-		return res.status(500).json({ error: error.message });
+		res.status(500).json({ error: error.message });
 	}
 };
 
@@ -93,19 +90,24 @@ export const verify = async (
 	}
 };
 
-export const logout = (req: Request, res: Response) => {
-    try {
-        req.session.destroy((err) => {
-            if (err) {
-                return res.status(500).json({ error: MESSAGES.LOGOUT.LOGOUT_FAILED });
-            }
-            res.clearCookie('connect.sid');
-            return res.status(200).json({ message: MESSAGES.LOGOUT.LOGOUT_SUCCESSFUL });
-        });
-    } catch (error) {
-        return res.status(500).json({ error: error.message });
-    }
-}
+export const logout = (req: Request, res: Response): void => {
+	try {
+		req.session.destroy((err) => {
+			if (err) {
+				res.status(500).json({
+					error: MESSAGES.LOGOUT.LOGOUT_FAILED,
+				});
+				return;
+			}
+			res.clearCookie("connect.sid");
+			res.status(200).json({
+				message: MESSAGES.LOGOUT.LOGOUT_SUCCESSFUL,
+			});
+		});
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
 
 export const rand = () => crypto.randomBytes(128).toString("base64");
 export const auth = (salt, pw) => {
