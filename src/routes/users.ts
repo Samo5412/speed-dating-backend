@@ -6,7 +6,7 @@ import {
   updateUserById,
   deleteUserById,
 } from "../controllers/users.js";
-import { login, logout, register } from "../auth/auth.js";
+import { login, logout, register, verify } from "../auth/auth.js";
 
 const router: Router = express.Router();
 
@@ -15,7 +15,7 @@ const router: Router = express.Router();
 router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", logout);
-router.get("/", getAllUsers);
+router.get("/", verify, getAllUsers);
 router.get("/:userId", getUserById);
 router.put("/:userId", updateUserById);
 
