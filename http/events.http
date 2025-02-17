@@ -5,10 +5,11 @@
 // Expected HTTP response status code: 201
 // Expected response: a user object (json)
 # @name createOrganizer
-POST {{baseUrl}}/users
+POST {{baseUrl}}/users/register
 Content-Type: application/json
 
 {
+    "fullName": "Bruce Lee",
     "email": "organizer@example.com",
     "password": "password123",
     "role": "organizer"
@@ -18,18 +19,19 @@ Content-Type: application/json
 // Expected HTTP response status code: 201
 // Expected response: a user object (json)
 # @name createParticipant
-POST {{baseUrl}}/users
+POST {{baseUrl}}/users/register
 Content-Type: application/json
 
 {
+    "fullName": "Joakim Colloz",
     "email": "eventParticipant@example.com",
     "password": "password123",
     "role": "participant"
 }
 
 ### Store the user IDs as variables
-@organizerId = {{createOrganizer.response.body._id}}
-@participantId = {{createParticipant.response.body._id}}
+@organizerId = {{createOrganizer.response.body.userId}}
+@participantId = {{createParticipant.response.body.userId}}
 
 ### Create a new event
 // Expected HTTP response status code: 201

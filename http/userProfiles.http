@@ -9,33 +9,33 @@
 // Expected HTTP response status code: 201
 // Expected response: a user object (json)
 # @name createUser
-POST {{baseUrl}}/users
+POST {{baseUrl}}/users/register
 Content-Type: application/json
 
 {
+    "fullName": "Bruce Wayne",
     "email": "profileuser4@example.com",
-    "password": "password123",
-    "role": "participant"
+    "password": "password123"
 }
 
 ### Create another test user
 // Expected HTTP response status code: 201
 // Expected response: a user object (json)
 # @name createSecondUser
-POST {{baseUrl}}/users
+POST {{baseUrl}}/users/register
 Content-Type: application/json
 
 {
+    "fullName": "Clark Kent",
     "email": "profileuser5@example.com",
-    "password": "password123",
-    "role": "participant"
+    "password": "password123"
 }
 
 ###############################################
 
 ### Store the user IDs as variables
-@userId = {{createUser.response.body._id}}
-@secondUserId = {{createSecondUser.response.body._id}}
+@userId = {{createUser.response.body.userId}}
+@secondUserId = {{createSecondUser.response.body.userId}}
 
 ###############################################
 // Profile Management Endpoints
@@ -54,11 +54,11 @@ Content-Type: application/json
     "gender": "man"
 }
 
-### Create a new profile for the user
-// Expected HTTP response status code: 201
-// Expected response: the created profile object (json)
-# @name createProfile
-POST {{baseUrl}}/userProfiles
+### Update profile for the user using the user id
+// Expected HTTP response status code: 200
+// Expected response: the updated profile object (json)
+# @name updateProfile
+PUT {{baseUrl}}/userProfiles/{{userId}}
 Content-Type: application/json
 
 {
@@ -89,11 +89,11 @@ Content-Type: application/json
     "gender": "man"
 }
 
-### Create a profile for the second user
-// Expected HTTP response status code: 201
-// Expected response: the created profile object (json)
-# @name createSecondProfile
-POST {{baseUrl}}/userProfiles
+### Update the profile for the second user
+// Expected HTTP response status code: 200
+// Expected response: the updated profile object (json)
+# @name updateSecondProfile
+PUT {{baseUrl}}/userProfiles/{{secondUserId}}
 Content-Type: application/json
 
 {
@@ -103,10 +103,6 @@ Content-Type: application/json
     "gender": "woman",
     "interests": ["reading", "travel"]
 }
-
-### Store the profile IDs
-@profileId = {{createProfile.response.body.userId}}
-@secondProfileId = {{createSecondProfile.response.body.userId}}
 
 ###############################################
 
@@ -120,7 +116,7 @@ GET {{baseUrl}}/userProfiles
 ### Get specific profile
 // Expected HTTP response status code: 200
 // Expected response: a profile object (json)
-GET {{baseUrl}}/userProfiles/{{profileId}}
+GET {{baseUrl}}/userProfiles/{{userId}}
 
 ### Try to get non-existent profile
 // Expected HTTP response status code: 404
@@ -132,7 +128,7 @@ GET {{baseUrl}}/userProfiles/65cccccccccccccccccccccc
 ### Update profile
 // Expected HTTP response status code: 200
 // Expected response: the updated profile object (json)
-PUT {{baseUrl}}/userProfiles/{{profileId}}
+PUT {{baseUrl}}/userProfiles/{{userId}}
 Content-Type: application/json
 
 {
@@ -158,17 +154,17 @@ Content-Type: application/json
 ### Delete the profile
 // Expected HTTP response status code: 200
 // Expected response: "Profile deleted"
-DELETE {{baseUrl}}/userProfiles/{{profileId}}
+DELETE {{baseUrl}}/userProfiles/{{userId}}
 
 ### Try to delete already deleted profile
 // Expected HTTP response status code: 404
 // Expected response: "Profile not found" error
-DELETE {{baseUrl}}/userProfiles/{{profileId}}
+DELETE {{baseUrl}}/userProfiles/{{userId}}
 
 ### Delete the second profile
 // Expected HTTP response status code: 200
 // Expected response: "Profile deleted"
-DELETE {{baseUrl}}/userProfiles/{{secondProfileId}}
+DELETE {{baseUrl}}/userProfiles/{{secondUserId}}
 
 ###############################################
 // Cleanup Endpoints

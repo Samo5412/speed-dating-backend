@@ -2,23 +2,36 @@
 
 @baseUrl = http://localhost:3000/api/v1
 
-### Create a new user
+### Register a new user
 // Expected HTTP response status code: 201
-// Expected response: a user object (json)
-# @name createUser
-POST {{baseUrl}}/users
+// Expected response: a string stating that user was created.
+# @name registerUser
+POST {{baseUrl}}/users/register HTTP/1.1
 Content-Type: application/json
 
 {
-    "email": "test83@example.com",
-    "password": "password123",
-    "role": "participant"
+    "fullName": "Daniel Jönsson",
+    "email": "john_doe@email.com",
+    "password": "password123"
+}
+
+
+### Login a user
+// Expected HTTP response status code: 200
+// Expected response: a user object representing the logged in user (json)
+# @name loginUser
+POST {{baseUrl}}/users/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "john_doe@email.com",
+    "password": "password123"
 }
 
 ###
 
-@userId = {{createUser.response.body._id}}
-@userEmail = {{createUser.response.body.email}}
+@userId = {{registerUser.response.body.userId}}
+@userEmail = {{registerUser.response.body.email}}
 
 ###
 
@@ -61,11 +74,12 @@ GET {{baseUrl}}/users
 ### Create a new user to add as shared contact
 // Expected HTTP response status code: 201
 // Expected response: a user object (json)
-# @name createSharedContactUser
-POST {{baseUrl}}/users
+# @name registerSharedContactUser
+POST {{baseUrl}}/users/register
 Content-Type: application/json
 
 {
+    "fullName": "King Tubby",
     "email": "sharedContact@example.com",
     "password": "password123",
     "role": "participant"
@@ -73,7 +87,7 @@ Content-Type: application/json
 
 ###
 
-@sharedContactId = {{createSharedContactUser.response.body._id}}
+@sharedContactId = {{registerSharedContactUser.response.body.userId}}
 
 ### Add a shared contact
 // Expected HTTP response status code: 201
@@ -93,11 +107,12 @@ Content-Type: application/json
 ### Create a third user to add as another shared contact
 // Expected HTTP response status code: 201
 // Expected response: a user object (json)
-# @name createSecondSharedContactUser
-POST {{baseUrl}}/users
+# @name registerSecondSharedContactUser
+POST {{baseUrl}}/users/register
 Content-Type: application/json
 
 {
+    "fullName": "Michael Prophet",
     "email": "sharedContact2@example.com",
     "password": "password123",
     "role": "participant"
@@ -105,7 +120,7 @@ Content-Type: application/json
 
 ###
 
-@secondSharedContactId = {{createSecondSharedContactUser.response.body._id}}
+@secondSharedContactId = {{registerSecondSharedContactUser.response.body.userId}}
 
 ### Add the second shared contact
 // Expected HTTP response status code: 201

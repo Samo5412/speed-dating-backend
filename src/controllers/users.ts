@@ -3,19 +3,6 @@ import { User } from "../models/User.js";
 import { UserProfile } from "../models/UserProfile.js";
 import { MESSAGES } from "../constants/messages.js";
 
-export const createUser = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const user = new User(req.body);
-    const savedUser = await user.save();
-    res.status(201).json(savedUser);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
 export const getAllUsers = async (
   req: Request,
   res: Response

@@ -1,6 +1,5 @@
 import express, { Router } from "express";
 import {
-  createUser,
   getUserById,
   getAllUsers,
   updateUserById,
@@ -14,15 +13,18 @@ import {
   getUserNotifications,
   markNotificationAsRead,
   deleteNotification,
-  createNotification
+  createNotification,
 } from "../controllers/users.js";
+import { login, logout, register, verify } from "../auth/auth.js";
 
 const router: Router = express.Router();
 
-router.post("/", createUser);
 router.post("/:userId/shared-contacts", addSharedContact);
+router.post("/register", register);
+router.post("/login", login);
+router.post("/logout", logout);
 
-router.get("/", getAllUsers);
+router.get("/", verify, getAllUsers);
 router.get("/:userId", getUserById);
 router.get("/:userId/shared-contacts", getAllSharedContactsForUser);
 router.get("/:userId/shared-contacts/:contactId", getSharedContactByContactId);
@@ -41,6 +43,5 @@ router.put("/:userId/notifications/:notificationId/read", markNotificationAsRead
 router.delete("/:userId/notifications/:notificationId", deleteNotification);
 
 // TODO: Add Rate limiting with rateLimit from express-rate-limit
-// TODO: Add authorization to access these routes
 
 export const usersRouter = router;
