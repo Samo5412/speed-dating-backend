@@ -15,6 +15,32 @@ Content-Type: application/json
     "role": "participant"
 }
 
+### Register a new user
+// Expected HTTP response status code: 201
+// Expected response: a string stating that user was created.
+# @name registerUser
+POST {{baseUrl}}/users/register HTTP/1.1
+Content-Type: application/json
+
+{
+    "fullName": "Daniel Jönsson",
+    "email": "john_doe@email.com",
+    "password": "password123"
+}
+
+
+### Login a user
+// Expected HTTP response status code: 200
+// Expected response: a user object representing the logged in user (json)
+# @name loginUser
+POST {{baseUrl}}/users/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "john_doe@email.com",
+    "password": "password123"
+}
+
 ###
 
 @userId = {{createUser.response.body._id}}

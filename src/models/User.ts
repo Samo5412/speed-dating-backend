@@ -1,10 +1,14 @@
 import mongoose from "mongoose";
 
-const ALLOWED_ROLES = ["organizer", "participant"] as const;
+export const ALLOWED_ROLES = ["organizer", "participant"] as const;
 
 const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String, required: true, select: false },
+  salt: {
+    type: String,
+    select: false
+  },
   role: {
     type: String,
     enum: ALLOWED_ROLES,
