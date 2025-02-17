@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Review } from "../models/Review.js";
 import { MESSAGES } from "../constants/messages.js";
+import { User } from "../models/User.js";
 
 export const createReview = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -55,6 +56,27 @@ export const deleteReview = async (req: Request, res: Response): Promise<void> =
     } else {
       res.status(404).json({ message: MESSAGES.REVIEW.NOT_FOUND });
     }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getReviewsByReviewerId = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const reviewer = await User.findById(req.params.reviewerId);
+    if (!reviewer) {
+      res.status(404).json({ message: MESSAGES.USER.NOT_FOUND });
+      return;
+    }
+
+    const { reviewerId } = req.params;
+    const reviews = await Review.find({ reviewerId: reviewer._id })
+      .populate('reviewerId', 'email')
+      .populate('reviewedUserId', 'email');
+    res.json(reviews);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -4,7 +4,8 @@ import {
   getReview,
   getReviews,
   updateReview,
-  deleteReview
+  deleteReview,
+  getReviewsByReviewerId
 } from "../controllers/reviews.js";
 
 const router: Router = express.Router();
@@ -13,6 +14,7 @@ router.post("/", createReview);
 
 router.get("/", getReviews);
 router.get("/:reviewerId", getReview);
+router.get("/user/:reviewerId", getReviewsByReviewerId);
 
 router.put("/:reviewerId", updateReview);
 
