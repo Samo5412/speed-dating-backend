@@ -83,15 +83,16 @@ export const verify = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
-) => {
+): Promise<void> => {
 	try {
 		if (!req.session.user) {
-			return res.status(401).json({ error: "Unauthorized" });
+			res.status(401).json({ error: "Unauthorized" });
+			return;
 		}
 		req.body.identity = req.session.user;
-		return next();
+		next();
 	} catch (error) {
-		return res.status(500).json({ error: error.message });
+		res.status(500).json({ error: error.message });
 	}
 };
 
