@@ -61,6 +61,26 @@ GET {{baseUrl}}/reviews
 // Expected response: a review object (json)
 GET {{baseUrl}}/reviews/{{reviewId}}
 
+### Create one more review by the same user
+// Expected HTTP response status code: 201
+// Expected response: the created review object (json)
+POST {{baseUrl}}/reviews
+Content-Type: application/json
+
+{
+    "reviewerId": "{{reviewerId}}",
+    "reviewedUserId": "{{reviewedUserId}}",
+    "rating": 2,
+    "comment": "Second review!"
+}
+
+
+
+### Test: Get all reviews by reviewer
+// Expected HTTP response status code: 200
+// Expected response: array of reviews where the user is the reviewer
+GET {{baseUrl}}/reviews/user/{{reviewerId}}
+
 ###############################################
 
 // Test: Update review
