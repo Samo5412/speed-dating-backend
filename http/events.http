@@ -5,10 +5,11 @@
 // Expected HTTP response status code: 201
 // Expected response: a user object (json)
 # @name createOrganizer
-POST {{baseUrl}}/users
+POST {{baseUrl}}/users/register
 Content-Type: application/json
 
 {
+    "fullName": "Bruce Lee",
     "email": "organizer@example.com",
     "password": "password123",
     "role": "organizer"
@@ -18,18 +19,19 @@ Content-Type: application/json
 // Expected HTTP response status code: 201
 // Expected response: a user object (json)
 # @name createParticipant
-POST {{baseUrl}}/users
+POST {{baseUrl}}/users/register
 Content-Type: application/json
 
 {
+    "fullName": "Joakim Colloz",
     "email": "eventParticipant@example.com",
     "password": "password123",
     "role": "participant"
 }
 
 ### Store the user IDs as variables
-@organizerId = {{createOrganizer.response.body._id}}
-@participantId = {{createParticipant.response.body._id}}
+@organizerId = {{createOrganizer.response.body.userId}}
+@participantId = {{createParticipant.response.body.userId}}
 
 ### Create a new event
 // Expected HTTP response status code: 201
@@ -81,6 +83,70 @@ Content-Type: application/json
     "description": "An updated fun evening of speed dating!",
     "maximumParticipants": 30
 }
+
+### Register participant for event
+// Expected HTTP response status code: 200
+// Expected response: the updated event object with new participant (json)
+POST {{baseUrl}}/events/register/{{eventId}}
+Content-Type: application/json
+
+{
+    "userId": "{{participantId}}"
+}
+
+### Register another participant for event
+// Expected HTTP response status code: 200
+// Expected response: the updated event object with two registered participants (json)
+POST {{baseUrl}}/events/register/{{eventId}}
+Content-Type: application/json
+
+{
+    "userId": "{{organizerId}}"
+}
+
+### Get all events for the organizer
+// Expected HTTP response status code: 200
+// Expected response: array of events where the user is the organizer
+GET {{baseUrl}}/events/user/{{organizerId}}
+
+### Get all events for the participant
+// Expected HTTP response status code: 200
+// Expected response: array of events where the user is the participant
+GET {{baseUrl}}/events/user/{{participantId}}
+
+### Remove a participant from an event
+// Expected HTTP response status code: 200
+// Expected response: the updated event object with one less registered participant (json)
+DELETE {{baseUrl}}/events/register/{{eventId}}
+Content-Type: application/json
+
+{
+    "userId": "{{participantId}}"
+}
+
+### Start event
+// Expected HTTP response status code: 200
+// Expected response: the updated event object with isEventActive true
+POST {{baseUrl}}/events/{{eventId}}/start
+Content-Type: application/json
+
+### Start next round
+// Expected HTTP response status code: 200
+// Expected response: the updated event object with roundNumber set to 2
+POST {{baseUrl}}/events/{{eventId}}/nextRound
+Content-Type: application/json
+
+### End current round
+// Expected HTTP response status code: 200
+// Expected response: the updated event object with isRoundActive to false
+POST {{baseUrl}}/events/{{eventId}}/endRound
+Content-Type: application/json
+
+### End event
+// Expected HTTP response status code: 200
+// Expected response: the updated event object with isEventActive false
+POST {{baseUrl}}/events/{{eventId}}/end
+Content-Type: application/json
 
 ### Delete event
 // Expected HTTP response status code: 200

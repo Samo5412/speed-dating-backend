@@ -15,7 +15,7 @@ const EventSchema = new mongoose.Schema({
   endDateTime: { type: Date },
   location: { type: String },
   description: { type: String },
-  maximumParticipants: { type: Number },
+  maximumParticipants: { type: Number, default: 0 },
   isEventActive: { type: Boolean, default: false },
   registrationDeadline: { type: Date },
   nextRound: {

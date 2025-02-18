@@ -2,19 +2,6 @@
 
 @baseUrl = http://localhost:3000/api/v1
 
-### Create a new user
-// Expected HTTP response status code: 201
-// Expected response: a user object (json)
-# @name createUser
-POST {{baseUrl}}/users HTTP/1.1
-Content-Type: application/json
-
-{
-    "email": "test83@example.com",
-    "password": "password123",
-    "role": "participant"
-}
-
 ### Register a new user
 // Expected HTTP response status code: 201
 // Expected response: a string stating that user was created.
@@ -43,14 +30,24 @@ Content-Type: application/json
 
 ###
 
-@userId = {{createUser.response.body._id}}
-@userEmail = {{createUser.response.body.email}}
+@userId = {{registerUser.response.body.userId}}
+@userEmail = {{registerUser.response.body.email}}
 
 ###
 
+### Update the created user by email
+// Expected HTTP response status code: 200
+# @name updateUserByEmail
+PUT {{baseUrl}}/users/email/{{userEmail}}
+Content-Type: application/json
+
+{
+    "email": "updatedUsingEmail@example.com"
+}
+
 ### Update the created user by id
 // Expected HTTP response status code: 200
-# @name updateUser
+# @name updateUserById
 PUT {{baseUrl}}/users/{{userId}}
 Content-Type: application/json
 
@@ -64,12 +61,152 @@ Content-Type: application/json
 // Expected response: a user object (json)
 GET {{baseUrl}}/users/{{userId}}
 
-### Delete the user
-// Expected HTTP response status code: 200
-DELETE {{baseUrl}}/users/{{userId}}
-
 ### Get all users
 // Test: Get all users
 // Expected HTTP response status code: 200
 // Expected response: an array (json) with all users
 GET {{baseUrl}}/users
+
+###############################################
+// Shared Contact Endpoints
+###############################################
+
+### Create a new user to add as shared contact
+// Expected HTTP response status code: 201
+// Expected response: a user object (json)
+# @name registerSharedContactUser
+POST {{baseUrl}}/users/register
+Content-Type: application/json
+
+{
+    "fullName": "King Tubby",
+    "email": "sharedContact@example.com",
+    "password": "password123",
+    "role": "participant"
+}
+
+###
+
+@sharedContactId = {{registerSharedContactUser.response.body.userId}}
+
+### Add a shared contact
+// Expected HTTP response status code: 201
+// Expected response: created shared contact object
+# @name addSharedContact
+POST {{baseUrl}}/users/{{userId}}/shared-contacts
+Content-Type: application/json
+
+{
+    "contactId": "{{sharedContactId}}"
+}
+
+###
+
+@addedContactId = {{addSharedContact.response.body.contact}}
+
+### Create a third user to add as another shared contact
+// Expected HTTP response status code: 201
+// Expected response: a user object (json)
+# @name registerSecondSharedContactUser
+POST {{baseUrl}}/users/register
+Content-Type: application/json
+
+{
+    "fullName": "Michael Prophet",
+    "email": "sharedContact2@example.com",
+    "password": "password123",
+    "role": "participant"
+}
+
+###
+
+@secondSharedContactId = {{registerSecondSharedContactUser.response.body.userId}}
+
+### Add the second shared contact
+// Expected HTTP response status code: 201
+// Expected response: created shared contact object
+# @name addSecondSharedContact
+POST {{baseUrl}}/users/{{userId}}/shared-contacts
+Content-Type: application/json
+
+{
+    "contactId": "{{secondSharedContactId}}"
+}
+
+### Get all shared contacts for a user
+// Expected HTTP response status code: 200
+// Expected response: array of shared contacts
+GET {{baseUrl}}/users/{{userId}}/shared-contacts
+
+### Get a specific shared contact
+// Expected HTTP response status code: 200
+// Expected response: shared contact object
+GET {{baseUrl}}/users/{{userId}}/shared-contacts/{{sharedContactId}}
+
+### Update a shared contact
+// Expected HTTP response status code: 200
+// Expected response: updated shared contact object
+PUT {{baseUrl}}/users/{{userId}}/shared-contacts/{{sharedContactId}}
+Content-Type: application/json
+
+{
+    "status": "accepted"
+}
+
+### Remove a shared contact
+// Expected HTTP response status code: 200
+DELETE {{baseUrl}}/users/{{userId}}/shared-contacts/{{sharedContactId}}
+
+### Remove a not existing shared contact
+// Expected HTTP response status code: 404
+DELETE {{baseUrl}}/users/{{userId}}/shared-contacts/67b0a9bec6f8a15f513ed713
+
+###############################################
+// Notification Endpoints
+###############################################
+
+### Create a notification for user
+// Expected HTTP response status code: 201
+// Expected response: created notification object
+# @name createNotification
+POST {{baseUrl}}/users/{{userId}}/notifications
+Content-Type: application/json
+
+{
+    "message": "You have a new match with Bruce Lee!"
+}
+
+###
+
+@notificationId = {{createNotification.response.body._id}}
+
+### Get user notifications
+// Expected HTTP response status code: 200
+// Expected response: array of notifications
+GET {{baseUrl}}/users/{{userId}}/notifications
+
+### Mark notification as read
+// Expected HTTP response status code: 200
+// Expected response: updated notification object
+PUT {{baseUrl}}/users/{{userId}}/notifications/{{notificationId}}/read
+
+### Delete notification
+// Expected HTTP response status code: 200
+// Expected response: Notification deleted
+DELETE {{baseUrl}}/users/{{userId}}/notifications/{{notificationId}}
+
+###############################################
+// Clean up
+###############################################
+
+### Delete the user
+// Expected HTTP response status code: 200
+DELETE {{baseUrl}}/users/{{userId}}
+
+### Delete the shared contact user
+// Expected HTTP response status code: 200
+DELETE {{baseUrl}}/users/{{sharedContactId}}
+
+### Delete the second shared contact user
+// Expected HTTP response status code: 200
+DELETE {{baseUrl}}/users/{{secondSharedContactId}}

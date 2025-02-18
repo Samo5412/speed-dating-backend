@@ -47,7 +47,11 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 		newUser.profile = userProfile._id;
 		await newUser.save();
 		await userProfile.save();
-        res.status(201).json({ message: MESSAGES.REGISTER.USER_CREATED });
+        res.status(201).json({ message: MESSAGES.REGISTER.USER_CREATED, 
+			userId: newUser._id,
+			fullName: fullName,
+			email: email,
+		 });
 	} catch (error) {
         res.status(500).json({ error: error.message });
 	}

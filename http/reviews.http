@@ -5,10 +5,11 @@
 // Expected HTTP response status code: 201
 // Expected response: a user object (json)
 # @name createReviewer
-POST {{baseUrl}}/users
+POST {{baseUrl}}/users/register
 Content-Type: application/json
 
 {
+    "fullName": "King Tubby",
     "email": "reviewerUser2@example.com",
     "password": "password123",
     "role": "participant"
@@ -18,10 +19,11 @@ Content-Type: application/json
 // Expected HTTP response status code: 201
 // Expected response: a user object (json)
 # @name createReviewed
-POST {{baseUrl}}/users
+POST {{baseUrl}}/users/register
 Content-Type: application/json
 
 {
+    "fullName": "Michael Prophet",
     "email": "reviewedUser2@example.com",
     "password": "password123",
     "role": "participant"
@@ -29,8 +31,8 @@ Content-Type: application/json
 
 ### Store the IDs as variables
 
-@reviewerId = {{createReviewer.response.body._id}}
-@reviewedUserId = {{createReviewed.response.body._id}}
+@reviewerId = {{createReviewer.response.body.userId}}
+@reviewedUserId = {{createReviewed.response.body.userId}}
 
 ### Create the review using the reviewer and reviewed IDs
 // Expected HTTP response status code: 201
@@ -60,6 +62,26 @@ GET {{baseUrl}}/reviews
 // Expected HTTP response status code: 200
 // Expected response: a review object (json)
 GET {{baseUrl}}/reviews/{{reviewId}}
+
+### Create one more review by the same user
+// Expected HTTP response status code: 201
+// Expected response: the created review object (json)
+POST {{baseUrl}}/reviews
+Content-Type: application/json
+
+{
+    "reviewerId": "{{reviewerId}}",
+    "reviewedUserId": "{{reviewedUserId}}",
+    "rating": 2,
+    "comment": "Second review!"
+}
+
+
+
+### Test: Get all reviews by reviewer
+// Expected HTTP response status code: 200
+// Expected response: array of reviews where the user is the reviewer
+GET {{baseUrl}}/reviews/user/{{reviewerId}}
 
 ###############################################
 

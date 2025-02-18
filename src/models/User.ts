@@ -19,7 +19,7 @@ const UserSchema = new mongoose.Schema({
   sharedContacts: [
     {
       // contact references User B (not this user).
-      contact: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      contactId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
       // status represents User A's (this user's) response.
       status: {
         type: String,
@@ -29,7 +29,7 @@ const UserSchema = new mongoose.Schema({
       createdAt: { type: Date, default: Date.now },
     },
   ],
-  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
+  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }], // TODO: This field can probably be removed
   notifications: [
     {
       message: { type: String, required: true },

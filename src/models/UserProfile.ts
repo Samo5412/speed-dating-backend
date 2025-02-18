@@ -18,7 +18,7 @@ const UserProfileSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   fullName: { type: String, required: true },
   dateOfBirth: { type: Date },
-  gender: { type: String, enum: ALLOWED_GENDERS },
+  gender: { type: String, enum: ALLOWED_GENDERS }, // TODO: Should be required?
   phoneNumber: { type: String },
   occupation: { type: String },
   avatarUrl: { type: String },
