@@ -69,6 +69,7 @@ mongoose
 	.then(() => console.log("Database is connected"))
 	.catch((err) => console.log("Unable to connect to Database: ", err));
 
+// TODO: This should probably be removed as it overrides the previous use of the session middleware
 // use session middleware
 app.use(
 	session({
