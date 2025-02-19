@@ -7,17 +7,18 @@ import {
   deleteReview,
   getReviewsByReviewerId
 } from "../controllers/reviews.js";
+import { verify } from "../auth/auth.js";
 
 const router: Router = express.Router();
 
-router.post("/", createReview);
+router.post("/", verify, createReview);
 
-router.get("/", getReviews);
-router.get("/:reviewerId", getReview);
-router.get("/user/:reviewerId", getReviewsByReviewerId);
+router.get("/", verify, getReviews);
+router.get("/:reviewerId", verify, getReview);
+router.get("/user/:reviewerId", verify, getReviewsByReviewerId);
 
-router.put("/:reviewerId", updateReview);
+router.put("/:reviewerId", verify, updateReview);
 
-router.delete("/:reviewerId", deleteReview);
+router.delete("/:reviewerId", verify, deleteReview);
 
 export const reviewsRouter = router;

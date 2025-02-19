@@ -19,28 +19,28 @@ import { login, logout, register, verify } from "../auth/auth.js";
 
 const router: Router = express.Router();
 
-router.post("/:userId/shared-contacts", addSharedContact);
+router.post("/:userId/shared-contacts", verify, addSharedContact);
 router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", logout);
 
 router.get("/", verify, getAllUsers);
-router.get("/:userId", getUserById);
-router.get("/:userId/shared-contacts", getAllSharedContactsForUser);
-router.get("/:userId/shared-contacts/:contactId", getSharedContactByContactId);
+router.get("/:userId", verify, getUserById);
+router.get("/:userId/shared-contacts", verify, getAllSharedContactsForUser);
+router.get("/:userId/shared-contacts/:contactId", verify, getSharedContactByContactId);
 
-router.put("/:userId", updateUserById);
-router.put("/email/:userEmail", updateUserByEmail);
-router.put("/:userId/shared-contacts/:contactId", updateSharedContact);
+router.put("/:userId", verify, updateUserById);
+router.put("/email/:userEmail", verify, updateUserByEmail);
+router.put("/:userId/shared-contacts/:contactId", verify, updateSharedContact);
 
-router.delete("/:userId", deleteUserById);
-router.delete("/:userId/shared-contacts/:contactId", deleteSharedContact);
+router.delete("/:userId", verify, deleteUserById);
+router.delete("/:userId/shared-contacts/:contactId", verify, deleteSharedContact);
 
 // Notification routes
-router.post("/:userId/notifications", createNotification);
-router.get("/:userId/notifications", getUserNotifications);
-router.put("/:userId/notifications/:notificationId/read", markNotificationAsRead);
-router.delete("/:userId/notifications/:notificationId", deleteNotification);
+router.post("/:userId/notifications", verify, createNotification);
+router.get("/:userId/notifications", verify, getUserNotifications);
+router.put("/:userId/notifications/:notificationId/read", verify, markNotificationAsRead);
+router.delete("/:userId/notifications/:notificationId", verify, deleteNotification);
 
 // TODO: Add Rate limiting with rateLimit from express-rate-limit
 

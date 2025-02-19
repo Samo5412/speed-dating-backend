@@ -6,13 +6,14 @@ import {
   updateProfile,
   deleteProfile
 } from "../controllers/userProfiles.js";
+import { verify } from "../auth/auth.js";
 
 const router: Router = express.Router();
 
-router.post("/", createProfile);
-router.get("/", getProfiles);
-router.get("/:userId", getProfile);
-router.put("/:userId", updateProfile);
-router.delete("/:userId", deleteProfile);
+router.post("/", verify, createProfile);
+router.get("/", verify, getProfiles);
+router.get("/:userId", verify, getProfile);
+router.put("/:userId", verify, updateProfile);
+router.delete("/:userId", verify, deleteProfile);
 
 export const userProfilesRouter = router;
