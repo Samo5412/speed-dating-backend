@@ -1,6 +1,9 @@
 # Reviews API Endpoints
 @baseUrl = http://localhost:3000/api/v1
 
+# Make sure rest-client.rememberCookiesForSubsequentRequests is set to false in VS Code 
+# settings to properly test unauthorized requests
+
 ### Create a test user that will be the reviewer
 // Expected HTTP response status code: 201
 // Expected response: a user object (json)
@@ -29,10 +32,37 @@ Content-Type: application/json
     "role": "participant"
 }
 
-### Store the IDs as variables
+### Create a review before login using the reviewer and reviewed IDs
+// Expected HTTP response status code: 401
+// Expected response: "Unauthorized"
+# @name createUnauthenticatedReview
+POST {{baseUrl}}/reviews
+Content-Type: application/json
 
+{
+    "reviewerId": "{{reviewerId}}",
+    "reviewedUserId": "{{reviewedUserId}}",
+    "rating": 5,
+    "comment": "Great conversation!"
+}
+
+
+### Login as reviewer
+// Expected HTTP response status code: 200
+// Expected response: a user object (json)
+# @name loginReviewer
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+{
+    "email": "reviewerUser2@example.com",
+    "password": "password123"
+}
+
+### Store the IDs and auth cookie as variables
 @reviewerId = {{createReviewer.response.body.userId}}
 @reviewedUserId = {{createReviewed.response.body.userId}}
+@authCookie = {{loginReviewer.response.headers.set-cookie}}
 
 ### Create the review using the reviewer and reviewed IDs
 // Expected HTTP response status code: 201
@@ -40,6 +70,7 @@ Content-Type: application/json
 # @name createReview
 POST {{baseUrl}}/reviews
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "reviewerId": "{{reviewerId}}",
@@ -55,6 +86,7 @@ Content-Type: application/json
 // Expected HTTP response status code: 200
 // Expected response: an array (json) with all reviews
 GET {{baseUrl}}/reviews
+Cookie: {{authCookie}}
 
 ###############################################
 
@@ -62,12 +94,14 @@ GET {{baseUrl}}/reviews
 // Expected HTTP response status code: 200
 // Expected response: a review object (json)
 GET {{baseUrl}}/reviews/{{reviewId}}
+Cookie: {{authCookie}}
 
 ### Create one more review by the same user
 // Expected HTTP response status code: 201
 // Expected response: the created review object (json)
 POST {{baseUrl}}/reviews
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "reviewerId": "{{reviewerId}}",
@@ -76,12 +110,13 @@ Content-Type: application/json
     "comment": "Second review!"
 }
 
-
+###############################################
 
 ### Test: Get all reviews by reviewer
 // Expected HTTP response status code: 200
 // Expected response: array of reviews where the user is the reviewer
 GET {{baseUrl}}/reviews/user/{{reviewerId}}
+Cookie: {{authCookie}}
 
 ###############################################
 
@@ -90,6 +125,7 @@ GET {{baseUrl}}/reviews/user/{{reviewerId}}
 // Expected response: the updated review object (json)
 PUT {{baseUrl}}/reviews/{{reviewId}}
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "reviewerId": "{{reviewerId}}",
@@ -103,13 +139,16 @@ Content-Type: application/json
 // Expected HTTP response status code: 200
 // Expected response: "Review deleted"
 DELETE {{baseUrl}}/reviews/{{reviewId}}
+Cookie: {{authCookie}}
 
 ### Delete the reviewer
 // Expected HTTP response status code: 200
 // Expected response: "User deleted"
 DELETE {{baseUrl}}/users/{{reviewerId}}
+Cookie: {{authCookie}}
 
 ### Delete the reviewed user
 // Expected HTTP response status code: 200
 // Expected response: "User deleted"
 DELETE {{baseUrl}}/users/{{reviewedUserId}}
+Cookie: {{authCookie}}
