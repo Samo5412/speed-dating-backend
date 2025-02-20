@@ -1,4 +1,8 @@
 # Events API Endpoints
+
+# Make sure rest-client.rememberCookiesForSubsequentRequests is set to false in VS Code 
+# settings to properly test unauthorized requests
+
 @baseUrl = http://localhost:3000/api/v1
 
 ### Create an organizer user
@@ -29,9 +33,22 @@ Content-Type: application/json
     "role": "participant"
 }
 
-### Store the user IDs as variables
+### Login as organizer
+// Expected HTTP response status code: 200
+// Expected response: user object with session
+# @name loginOrganizer
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+{
+    "email": "organizer@example.com",
+    "password": "password123"
+}
+
+### Store the user IDs and auth cookie as variables
 @organizerId = {{createOrganizer.response.body.userId}}
 @participantId = {{createParticipant.response.body.userId}}
+@authCookie = {{loginOrganizer.response.headers.set-cookie}}
 
 ### Create a new event
 // Expected HTTP response status code: 201
@@ -39,6 +56,7 @@ Content-Type: application/json
 # @name createEvent
 POST {{baseUrl}}/events
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "name": "Speed Dating Night",
@@ -62,21 +80,50 @@ Content-Type: application/json
 ### Store the event ID
 @eventId = {{createEvent.response.body._id}}
 
+### Test create a new event when not authorized
+// Expected HTTP response status code: 401
+// Expected response: "Unauthorized"
+# @name createEventUnauthorized
+POST {{baseUrl}}/events
+Content-Type: application/json
+
+{
+    "name": "Speed Dating Night",
+    "organizer": "{{organizerId}}",
+    "participants": [],
+    "startDateTime": "2025-03-01 18:00",
+    "endDateTime": "2025-03-01 21:00",
+    "location": "Vasastan, Stockholm",
+    "description": "A fun evening of speed dating!",
+    "maximumParticipants": 20,
+    "isEventActive": false,
+    "registrationDeadline": "2025-02-28 23:59",
+    "nextRound": {
+        "roundNumber": 1,
+        "isRoundActive": false,
+        "startTime": "2025-03-01 18:00",
+        "endTime": "2025-03-01 18:15"
+    }
+}
+
 ### Get all events
 // Expected HTTP response status code: 200
 // Expected response: an array of event objects (json)
 GET {{baseUrl}}/events
+Cookie: {{authCookie}}
 
 ### Get specific event
 // Expected HTTP response status code: 200
 // Expected response: an event object (json)
 GET {{baseUrl}}/events/{{eventId}}
+Cookie: {{authCookie}}
 
 ### Update event
 // Expected HTTP response status code: 200
 // Expected response: the updated event object (json)
 PUT {{baseUrl}}/events/{{eventId}}
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "name": "Updated Speed Dating Night",
@@ -89,6 +136,7 @@ Content-Type: application/json
 // Expected response: the updated event object with new participant (json)
 POST {{baseUrl}}/events/register/{{eventId}}
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "userId": "{{participantId}}"
@@ -99,26 +147,30 @@ Content-Type: application/json
 // Expected response: the updated event object with two registered participants (json)
 POST {{baseUrl}}/events/register/{{eventId}}
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "userId": "{{organizerId}}"
 }
 
-### Get all events for the organizer
+### Get all events for a user (organizer/participant)
 // Expected HTTP response status code: 200
 // Expected response: array of events where the user is the organizer
 GET {{baseUrl}}/events/user/{{organizerId}}
+Cookie: {{authCookie}}
 
-### Get all events for the participant
+###
 // Expected HTTP response status code: 200
 // Expected response: array of events where the user is the participant
 GET {{baseUrl}}/events/user/{{participantId}}
+Cookie: {{authCookie}}
 
 ### Remove a participant from an event
 // Expected HTTP response status code: 200
 // Expected response: the updated event object with one less registered participant (json)
 DELETE {{baseUrl}}/events/register/{{eventId}}
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "userId": "{{participantId}}"
@@ -129,36 +181,43 @@ Content-Type: application/json
 // Expected response: the updated event object with isEventActive true
 POST {{baseUrl}}/events/{{eventId}}/start
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 ### Start next round
 // Expected HTTP response status code: 200
 // Expected response: the updated event object with roundNumber set to 2
 POST {{baseUrl}}/events/{{eventId}}/nextRound
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 ### End current round
 // Expected HTTP response status code: 200
 // Expected response: the updated event object with isRoundActive to false
 POST {{baseUrl}}/events/{{eventId}}/endRound
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 ### End event
 // Expected HTTP response status code: 200
 // Expected response: the updated event object with isEventActive false
 POST {{baseUrl}}/events/{{eventId}}/end
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 ### Delete event
 // Expected HTTP response status code: 200
 // Expected response: "Event deleted"
 DELETE {{baseUrl}}/events/{{eventId}}
+Cookie: {{authCookie}}
 
 ### Delete the participant user
 // Expected HTTP response status code: 200
 // Expected response: "User deleted"
 DELETE {{baseUrl}}/users/{{participantId}}
+Cookie: {{authCookie}}
 
 ### Delete the organizer user
 // Expected HTTP response status code: 200
 // Expected response: "User deleted"
 DELETE {{baseUrl}}/users/{{organizerId}}
+Cookie: {{authCookie}}

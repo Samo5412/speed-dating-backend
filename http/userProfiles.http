@@ -1,6 +1,9 @@
 # User Profiles API Endpoints
 @baseUrl = http://localhost:3000/api/v1
 
+# Make sure rest-client.rememberCookiesForSubsequentRequests is set to false in VS Code 
+# settings to properly test unauthorized requests
+
 ###############################################
 // User Creation Endpoint
 ###############################################
@@ -41,23 +44,9 @@ Content-Type: application/json
 // Profile Management Endpoints
 ###############################################
 
-### Try to create profile with non-existent user ID
-// Expected HTTP response status code: 404
-// Expected response: "User not found" error
-POST {{baseUrl}}/userProfiles
-Content-Type: application/json
-
-{
-    "userId": "65cccccccccccccccccccccc",
-    "fullName": "This user does not exist",
-    "dateOfBirth": "2000-01-01",
-    "gender": "man"
-}
-
-### Update profile for the user using the user id
-// Expected HTTP response status code: 200
-// Expected response: the updated profile object (json)
-# @name updateProfile
+### Try to update a profile when not authenticated
+// Expected HTTP response status code: 401
+// Expected response: "Unauthorized" error
 PUT {{baseUrl}}/userProfiles/{{userId}}
 Content-Type: application/json
 
@@ -77,11 +66,66 @@ Content-Type: application/json
     }
 }
 
+### Login a user
+// Expected HTTP response status code: 200
+// Expected response: a user object (json)
+# @name loginUser
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+{
+    "email": "profileuser5@example.com",
+    "password": "password123"
+}
+
+###
+
+@authCookie = {{loginUser.response.headers.set-cookie}}
+
+### Update profile for the user using the user id
+// Expected HTTP response status code: 200
+// Expected response: the updated profile object (json)
+# @name updateProfile
+PUT {{baseUrl}}/userProfiles/{{userId}}
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+    "userId": "{{userId}}",
+    "fullName": "Test Name1",
+    "dateOfBirth": "2001-01-01",
+    "gender": "man",
+    "phoneNumber": "0761234567",
+    "occupation": "Software Developer",
+    "bio": "A short bio",
+    "interests": ["coding", "hiking"],
+    "lookingFor": {
+        "ageRange": "25-45",
+        "personality": "outgoing",
+        "relationshipType": "long-term"
+    }
+}
+
+### Try to create profile with non-existent user ID
+// Expected HTTP response status code: 404
+// Expected response: "User not found" error
+POST {{baseUrl}}/userProfiles
+Content-Type: application/json
+Cookie: {{authCookie}}
+
+{
+    "userId": "65cccccccccccccccccccccc",
+    "fullName": "This user does not exist",
+    "dateOfBirth": "2000-01-01",
+    "gender": "man"
+}
+
 ### Try to create a second profile for the same user
 // Expected HTTP response status code: 400
 // Expected response: "User already has a profile" error
 POST {{baseUrl}}/userProfiles
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "userId": "{{userId}}",
@@ -95,6 +139,7 @@ Content-Type: application/json
 # @name updateSecondProfile
 PUT {{baseUrl}}/userProfiles/{{secondUserId}}
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "userId": "{{secondUserId}}",
@@ -110,6 +155,7 @@ Content-Type: application/json
 // Expected HTTP response status code: 200
 // Expected response: an array (json) with all profiles
 GET {{baseUrl}}/userProfiles
+Cookie: {{authCookie}}
 
 ###############################################
 
@@ -117,11 +163,13 @@ GET {{baseUrl}}/userProfiles
 // Expected HTTP response status code: 200
 // Expected response: a profile object (json)
 GET {{baseUrl}}/userProfiles/{{userId}}
+Cookie: {{authCookie}}
 
 ### Try to get non-existent profile
 // Expected HTTP response status code: 404
 // Expected response: "Profile not found" error
 GET {{baseUrl}}/userProfiles/65cccccccccccccccccccccc
+Cookie: {{authCookie}}
 
 ###############################################
 
@@ -130,6 +178,7 @@ GET {{baseUrl}}/userProfiles/65cccccccccccccccccccccc
 // Expected response: the updated profile object (json)
 PUT {{baseUrl}}/userProfiles/{{userId}}
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "userId": "{{userId}}",
@@ -143,6 +192,7 @@ Content-Type: application/json
 // Expected response: "Profile not found" error
 PUT {{baseUrl}}/userProfiles/65cccccccccccccccccccccc
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "fullName": "Not Found User",
@@ -155,16 +205,19 @@ Content-Type: application/json
 // Expected HTTP response status code: 200
 // Expected response: "Profile deleted"
 DELETE {{baseUrl}}/userProfiles/{{userId}}
+Cookie: {{authCookie}}
 
 ### Try to delete already deleted profile
 // Expected HTTP response status code: 404
 // Expected response: "Profile not found" error
 DELETE {{baseUrl}}/userProfiles/{{userId}}
+Cookie: {{authCookie}}
 
 ### Delete the second profile
 // Expected HTTP response status code: 200
 // Expected response: "Profile deleted"
 DELETE {{baseUrl}}/userProfiles/{{secondUserId}}
+Cookie: {{authCookie}}
 
 ###############################################
 // Cleanup Endpoints
@@ -174,8 +227,10 @@ DELETE {{baseUrl}}/userProfiles/{{secondUserId}}
 // Expected HTTP response status code: 200
 // Expected response: "User deleted"
 DELETE {{baseUrl}}/users/{{userId}}
+Cookie: {{authCookie}}
 
 ### Delete the second user
 // Expected HTTP response status code: 200
 // Expected response: "User deleted"
 DELETE {{baseUrl}}/users/{{secondUserId}}
+Cookie: {{authCookie}}

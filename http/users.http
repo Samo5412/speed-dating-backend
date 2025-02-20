@@ -1,5 +1,8 @@
 # @name Users API Endpoints
 
+# Make sure rest-client.rememberCookiesForSubsequentRequests is set to false in VS Code 
+# settings to properly test unauthorized requests
+
 @baseUrl = http://localhost:3000/api/v1
 
 ### Register a new user
@@ -15,6 +18,10 @@ Content-Type: application/json
     "password": "password123"
 }
 
+### Try get all users when not authenticated
+// Expected HTTP response status code: 401
+// Expected response: Unauthorized
+GET {{baseUrl}}/users
 
 ### Login a user
 // Expected HTTP response status code: 200
@@ -32,14 +39,24 @@ Content-Type: application/json
 
 @userId = {{registerUser.response.body.userId}}
 @userEmail = {{registerUser.response.body.email}}
+@authCookie = {{loginUser.response.headers.set-cookie}}
 
-###
+### Get all users
+// Expected HTTP response status code: 200
+GET {{baseUrl}}/users
+Cookie: {{authCookie}}
+
+### Get user by ID
+// Expected HTTP response status code: 200
+GET {{baseUrl}}/users/{{userId}}
+Cookie: {{authCookie}}
 
 ### Update the created user by email
 // Expected HTTP response status code: 200
 # @name updateUserByEmail
 PUT {{baseUrl}}/users/email/{{userEmail}}
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "email": "updatedUsingEmail@example.com"
@@ -50,6 +67,7 @@ Content-Type: application/json
 # @name updateUserById
 PUT {{baseUrl}}/users/{{userId}}
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "email": "updatedUsingId@example.com"
@@ -60,12 +78,14 @@ Content-Type: application/json
 // Expected HTTP response status code: 200
 // Expected response: a user object (json)
 GET {{baseUrl}}/users/{{userId}}
+Cookie: {{authCookie}}
 
 ### Get all users
 // Test: Get all users
 // Expected HTTP response status code: 200
 // Expected response: an array (json) with all users
 GET {{baseUrl}}/users
+Cookie: {{authCookie}}
 
 ###############################################
 // Shared Contact Endpoints
@@ -95,6 +115,7 @@ Content-Type: application/json
 # @name addSharedContact
 POST {{baseUrl}}/users/{{userId}}/shared-contacts
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "contactId": "{{sharedContactId}}"
@@ -128,6 +149,7 @@ Content-Type: application/json
 # @name addSecondSharedContact
 POST {{baseUrl}}/users/{{userId}}/shared-contacts
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "contactId": "{{secondSharedContactId}}"
@@ -137,17 +159,20 @@ Content-Type: application/json
 // Expected HTTP response status code: 200
 // Expected response: array of shared contacts
 GET {{baseUrl}}/users/{{userId}}/shared-contacts
+Cookie: {{authCookie}}
 
 ### Get a specific shared contact
 // Expected HTTP response status code: 200
 // Expected response: shared contact object
 GET {{baseUrl}}/users/{{userId}}/shared-contacts/{{sharedContactId}}
+Cookie: {{authCookie}}
 
 ### Update a shared contact
 // Expected HTTP response status code: 200
 // Expected response: updated shared contact object
 PUT {{baseUrl}}/users/{{userId}}/shared-contacts/{{sharedContactId}}
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "status": "accepted"
@@ -156,10 +181,12 @@ Content-Type: application/json
 ### Remove a shared contact
 // Expected HTTP response status code: 200
 DELETE {{baseUrl}}/users/{{userId}}/shared-contacts/{{sharedContactId}}
+Cookie: {{authCookie}}
 
 ### Remove a not existing shared contact
 // Expected HTTP response status code: 404
 DELETE {{baseUrl}}/users/{{userId}}/shared-contacts/67b0a9bec6f8a15f513ed713
+Cookie: {{authCookie}}
 
 ###############################################
 // Notification Endpoints
@@ -171,6 +198,7 @@ DELETE {{baseUrl}}/users/{{userId}}/shared-contacts/67b0a9bec6f8a15f513ed713
 # @name createNotification
 POST {{baseUrl}}/users/{{userId}}/notifications
 Content-Type: application/json
+Cookie: {{authCookie}}
 
 {
     "message": "You have a new match with Bruce Lee!"
@@ -184,16 +212,19 @@ Content-Type: application/json
 // Expected HTTP response status code: 200
 // Expected response: array of notifications
 GET {{baseUrl}}/users/{{userId}}/notifications
+Cookie: {{authCookie}}
 
 ### Mark notification as read
 // Expected HTTP response status code: 200
 // Expected response: updated notification object
 PUT {{baseUrl}}/users/{{userId}}/notifications/{{notificationId}}/read
+Cookie: {{authCookie}}
 
 ### Delete notification
 // Expected HTTP response status code: 200
 // Expected response: Notification deleted
 DELETE {{baseUrl}}/users/{{userId}}/notifications/{{notificationId}}
+Cookie: {{authCookie}}
 
 ###############################################
 // Clean up
@@ -202,11 +233,14 @@ DELETE {{baseUrl}}/users/{{userId}}/notifications/{{notificationId}}
 ### Delete the user
 // Expected HTTP response status code: 200
 DELETE {{baseUrl}}/users/{{userId}}
+Cookie: {{authCookie}}
 
 ### Delete the shared contact user
 // Expected HTTP response status code: 200
 DELETE {{baseUrl}}/users/{{sharedContactId}}
+Cookie: {{authCookie}}
 
 ### Delete the second shared contact user
 // Expected HTTP response status code: 200
 DELETE {{baseUrl}}/users/{{secondSharedContactId}}
+Cookie: {{authCookie}}
