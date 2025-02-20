@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { User } from "../models/User.js";
 import { UserProfile } from "../models/UserProfile.js";
+import { Review } from "../models/Review.js";
 import { MESSAGES } from "../constants/messages.js";
+import mongoose from "mongoose";
 
 export const getAllUsers = async (
   req: Request,
@@ -73,23 +75,41 @@ export const deleteUserById = async (
   req: Request,
   res: Response
 ): Promise<void> => {
+  const session = await mongoose.startSession();
+
   try {
-    const user = await User.findById(req.params.userId);
+    session.startTransaction();
+
+    // Check if user exists
+    const user = await User.findById(req.params.userId).session(session);
     if (!user) {
+      await session.abortTransaction();
       res.status(404).json({ message: MESSAGES.USER.NOT_FOUND });
       return;
     }
 
     // Delete associated UserProfile if it exists
     if (user.profile) {
-      await UserProfile.findByIdAndDelete(user.profile);
+      await UserProfile.findByIdAndDelete(user.profile).session(session);
     }
 
+    // Delete existing reviews
+    await Review.deleteMany({
+      $or: [
+        { reviewerId: req.params.userId },
+        { reviewedUserId: req.params.userId },
+      ],
+    }).session(session);
+
     // Delete the user
-    await user.deleteOne();
+    await user.deleteOne().session(session);
+    await session.commitTransaction();
     res.json({ message: MESSAGES.USER.DELETED });
   } catch (error) {
+    await session.abortTransaction();
     res.status(500).json({ message: error.message });
+  } finally {
+    session.endSession();
   }
 };
 
@@ -150,7 +170,7 @@ export const addSharedContact = async (
 
     const { contactId } = req.body;
 
-    // Check if contact exists
+    // Check if contact user exists
     const contactUser = await User.findById(contactId);
     if (!contactUser) {
       res
