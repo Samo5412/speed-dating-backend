@@ -135,16 +135,22 @@ Cookie: {{authCookie}}
 
 ###############################################
 
-// Test: Delete review
-// Expected HTTP response status code: 200
-// Expected response: "Review deleted"
-DELETE {{baseUrl}}/reviews/{{reviewId}}
-Cookie: {{authCookie}}
-
 ### Delete the reviewer
 // Expected HTTP response status code: 200
 // Expected response: "User deleted"
 DELETE {{baseUrl}}/users/{{reviewerId}}
+Cookie: {{authCookie}}
+
+### Test: Verify review was deleted with the reviewer
+// Expected HTTP response status code: 404
+// Expected response: "Review not found"
+GET {{baseUrl}}/reviews/{{reviewerId}}
+Cookie: {{authCookie}}
+
+### Test: Get all reviews (should be none)
+// Expected HTTP response status code: 200
+// Expected response: an empty array (json)
+GET {{baseUrl}}/reviews
 Cookie: {{authCookie}}
 
 ### Delete the reviewed user
