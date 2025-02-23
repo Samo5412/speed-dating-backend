@@ -11,6 +11,10 @@ import { reviewsRouter } from "./routes/reviews.js";
 import { userProfilesRouter } from "./routes/userProfiles.js";
 import { eventsRouter } from "./routes/events.js";
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fileUpload from 'express-fileupload';
+
 dotenv.config();
 
 // The Express server instance
@@ -36,6 +40,9 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(fileUpload({
+	limits:{fileSize: 5000000}, // 5MB max, kanske för lite...
+	abortOnLimit: true}));
 app.options("*", cors(corsOptions));
 const DB =
 	process.env.NODE_ENV === "production"
@@ -108,6 +115,7 @@ app.use(`${api_path}/users`, usersRouter);
 app.use(`${api_path}/reviews`, reviewsRouter);
 app.use(`${api_path}/userProfiles`, userProfilesRouter);
 app.use(`${api_path}/events`, eventsRouter);
+app.use(`${api_path}/images`, express.static(path.join(path.dirname(fileURLToPath(import.meta.url)),"images")));
 
 app.listen(port, () => {
 	console.log(`Server is running on port ${port}`);

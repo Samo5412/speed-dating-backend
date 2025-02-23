@@ -149,3 +149,45 @@ export const deleteProfile = async (
     session.endSession();
   }
 };
+
+
+export const uploadPic = async(
+  req: any, 
+  res:Response): Promise<void> => {
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      const { image } = req.files;
+
+      if (!image || !(image.mimetype as string).includes("image")) {
+        res.status(400);
+        return;
+      } 
+
+      const fileName = (image.name as string).replace(/^[0-9\s]*|[+*\r\n]/g, '');
+
+      image.mv(__dirname + '/images/' + fileName);
+
+      const updated = await UserProfile.findByIdAndUpdate(
+        req.params.userId,
+        { avatarUrl: fileName},
+        { new: true, session, runValidators: true }
+      ).populate("userId", "avatarUrl");
+
+      if(!updated) {
+        await session.abortTransaction();
+        res.status(404).json({ message: MESSAGES.PROFILE.NOT_FOUND });
+        return;
+      }
+
+      await session.commitTransaction();
+      res.sendStatus(200).json({message: "image uploaded!"});
+
+    }catch (error) {
+      await session.abortTransaction();
+      res.status(500).json({ message: error.message });
+    } finally {
+      session.endSession();
+    }
+  }
