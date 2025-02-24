@@ -4,11 +4,14 @@ import {
   getProfile,
   getProfiles,
   updateProfile,
-  deleteProfile
+  deleteProfile,
+  uploadPic,
 } from "../controllers/userProfiles.js";
 import { verify } from "../auth/auth.js";
 
 const router: Router = express.Router();
+
+router.post("/:userId/upload",verify, uploadPic);
 
 router.post("/", verify, createProfile);
 router.get("/", verify, getProfiles);
