@@ -1,0 +1,58 @@
+# @name Users API Endpoints
+
+# Make sure rest-client.rememberCookiesForSubsequentRequests is set to false in VS Code 
+# settings to properly test unauthorized requests
+
+@baseUrl = http://localhost:3000/api/v1
+
+### Register a new user
+// Expected HTTP response status code: 201
+// Expected response: a string stating that user was created or already exists.
+# @name registerUser
+POST {{baseUrl}}/users/register HTTP/1.1
+Content-Type: application/json
+
+{
+    "fullName": "John Doe",
+    "email": "john_doe@email.com",
+    "password": "password123"
+}
+
+### Make request wihout login should fail
+// Expected HTTP response status code: 401
+// Expected response: Unauthorized
+GET {{baseUrl}}/users
+
+### Login a user
+// Expected HTTP response status code: 200
+// Expected response: a user object representing the logged in user (json)
+# @name loginUser
+POST {{baseUrl}}/users/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "john_doe@email.com",
+    "password": "password123"
+}
+
+###
+
+@userId = {{registerUser.response.body.userId}}
+@authCookie = {{loginUser.response.headers.set-cookie}}
+
+### Get all users after login should be successful
+// Expected HTTP response status code: 200
+GET {{baseUrl}}/users
+Cookie: {{authCookie}}
+
+### logout
+// Expected HTTP response status code: 200
+# @name logout
+POST {{baseUrl}}/users/logout HTTP/1.1
+Cookie: {{authCookie}}
+
+### Make request after logout should fail
+// Expected HTTP response status code: 401
+// Expected response: Unauthorized
+GET {{baseUrl}}/users
+Cookie: {{authCookie}}
