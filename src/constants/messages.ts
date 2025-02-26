@@ -57,7 +57,8 @@ export const MESSAGES = {
             ROUND_ACTIVE: "Current round must be ended before starting a new one",
             MAX_ROUNDS: "Maximum number of rounds (3) has been reached",
             NO_ACTIVE_ROUND: "No active round to end",
-            MUST_BE_ACTIVE_FOR_ROUND: "Event must be active to end a round"
+            MUST_BE_ACTIVE_FOR_ROUND: "Event must be active to end a round",
+            MUST_BE_ORGANIZER_TO_CREATE_EVENT: "You must be an organizer to create event"
         }
     },
 
