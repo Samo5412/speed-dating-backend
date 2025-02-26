@@ -76,24 +76,6 @@ mongoose
 	.then(() => console.log("Database is connected"))
 	.catch((err) => console.log("Unable to connect to Database: ", err));
 
-// TODO: This should probably be removed as it overrides the previous use of the session middleware
-// use session middleware
-app.use(
-	session({
-		secret: process.env.SECRET || "MY_SECRET",
-		cookie: {
-			sameSite: "none",
-			secure: false, // CHANGE ON PRODUCTION
-			httpOnly: true,
-			maxAge: 1000 * 60 * 30, // 30 min ttl
-		},
-		rolling: true,
-		resave: false,
-		saveUninitialized: false,
-		store: store,
-	})
-);
-
 app.use(cookieParser());
 
 // Add express.json middleware
@@ -145,7 +127,7 @@ function getDevSessionConfig() {
   return {
     secret: process.env.SECRET || "MY_SECRET",
     cookie: {
-      sameSite: "none" as const,
+      sameSite: "strict" as const,
       secure: false,
       httpOnly: true,
       maxAge: 1000 * 60 * 30, // 30 min ttl
