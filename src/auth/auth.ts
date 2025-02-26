@@ -93,7 +93,6 @@ export const verify = async (
 			res.status(401).json({ error: "Unauthorized" });
 			return;
 		}
-		req.body.identity = req.session.user;
 		next();
 	} catch (error) {
 		res.status(500).json({ error: error.message });
