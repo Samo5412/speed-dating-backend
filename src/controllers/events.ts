@@ -1,9 +1,15 @@
 import { Request, Response } from "express";
 import { Event } from "../models/Event.js";
 import { MESSAGES } from "../constants/messages.js";
+import { ALLOWED_ROLES } from "../models/User.js";
 
 export const createEvent = async (req: Request, res: Response): Promise<void> => {
   try {
+    if (req.session.user?.role !== ALLOWED_ROLES[0]) {
+     res.status(400).json({error: MESSAGES.EVENT.MANAGEMENT.MUST_BE_ORGANIZER_TO_CREATE_EVENT})
+     return;
+    }
+    
     const event = new Event(req.body);
     await event.save();
     res.status(201).json(event);
