@@ -11,7 +11,8 @@ import {
   endEvent,
   startNextRound,
   endCurrentRound,
-  getEventsForUser
+  getEventsForUser,
+  getLatestEvent,
 } from "../controllers/events.js";
 import { verify } from "../auth/auth.js";
 
@@ -25,6 +26,7 @@ router.post("/:eventId/nextRound", verify, startNextRound);
 router.post("/:eventId/endRound", verify, endCurrentRound);
 
 router.get("/", verify, getEvents);
+router.get("/latest", verify, getLatestEvent);
 router.get("/user/:userId", verify, getEventsForUser);
 router.get("/:eventId", verify, getEvent);
 

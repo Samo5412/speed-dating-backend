@@ -3,13 +3,18 @@ import { Event } from "../models/Event.js";
 import { MESSAGES } from "../constants/messages.js";
 import { ALLOWED_ROLES } from "../models/User.js";
 
-export const createEvent = async (req: Request, res: Response): Promise<void> => {
+export const createEvent = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     if (req.session.user?.role !== ALLOWED_ROLES[0]) {
-     res.status(400).json({error: MESSAGES.EVENT.MANAGEMENT.MUST_BE_ORGANIZER_TO_CREATE_EVENT})
-     return;
+      res.status(400).json({
+        error: MESSAGES.EVENT.MANAGEMENT.MUST_BE_ORGANIZER_TO_CREATE_EVENT,
+      });
+      return;
     }
-    
+
     const event = new Event(req.body);
     await event.save();
     res.status(201).json(event);
@@ -40,9 +45,14 @@ export const getEvent = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const updateEvent = async (req: Request, res: Response): Promise<void> => {
+export const updateEvent = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    const event = await Event.findByIdAndUpdate(req.params.eventId, req.body, { new: true });
+    const event = await Event.findByIdAndUpdate(req.params.eventId, req.body, {
+      new: true,
+    });
     if (event) {
       res.json(event);
     } else {
@@ -256,7 +266,10 @@ export const endCurrentRound = async (
   }
 };
 
-export const deleteEvent = async (req: Request, res: Response): Promise<void> => {
+export const deleteEvent = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const event = await Event.findByIdAndDelete(req.params.eventId);
     if (event) {
@@ -290,9 +303,9 @@ export const unregisterParticipantFromEvent = async (
 
     // We can only remove participants that are currently registered
     if (!event.participants.includes(userId)) {
-      res
-        .status(400)
-        .json({ message: MESSAGES.EVENT.REGISTRATION.PARTICIPANT_NOT_REGISTERED });
+      res.status(400).json({
+        message: MESSAGES.EVENT.REGISTRATION.PARTICIPANT_NOT_REGISTERED,
+      });
       return;
     }
 
@@ -301,7 +314,7 @@ export const unregisterParticipantFromEvent = async (
       if (participantId.toString() === userId) {
         event.participants.splice(index, 1);
       }
-    })
+    });
     const updatedEvent = await event.save();
 
     res.json(updatedEvent);
@@ -317,13 +330,30 @@ export const getEventsForUser = async (
   try {
     const { userId } = req.params;
     const events = await Event.find({
-      $or: [
-        { participants: userId },
-        { organizer: userId }
-      ]
+      $or: [{ participants: userId }, { organizer: userId }],
     });
     res.json(events);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const getLatestEvent = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const latestEvent = await Event.findOne().sort({ createdAt: -1 });
+
+    if (!latestEvent) {
+      res.status(404).json({ message: MESSAGES.EVENT.NOT_FOUND });
+      return;
+    }
+
+    res.status(200).json(latestEvent);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: MESSAGES.EVENT.MANAGEMENT.EVENT_FETCH_ERROR });
   }
 };

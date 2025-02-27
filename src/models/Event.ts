@@ -24,6 +24,8 @@ const EventSchema = new mongoose.Schema({
     startTime: { type: Date },
     endTime: { type: Date },
   },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
 });
 
 const Event = mongoose.model("Event", EventSchema);
