@@ -93,11 +93,13 @@ const port = process.env.PORT || 3000;
  */
 const api_path = process.env.API_PATH || "";
 
+global.fileRoot = path.dirname(fileURLToPath(import.meta.url));
+
 app.use(`${api_path}/users`, usersRouter);
 app.use(`${api_path}/reviews`, reviewsRouter);
 app.use(`${api_path}/userProfiles`, userProfilesRouter);
 app.use(`${api_path}/events`, eventsRouter);
-app.use(`${api_path}/images`, express.static(path.join(path.dirname(fileURLToPath(import.meta.url)),"images")));
+app.use(`${api_path}/images`, express.static(path.join(global.fileRoot, "images")));
 
 app.listen(port, () => {
 	console.log(`Server is running on port ${port}`);

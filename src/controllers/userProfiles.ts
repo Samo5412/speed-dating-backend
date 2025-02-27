@@ -3,6 +3,7 @@ import { UserProfile } from "../models/UserProfile.js";
 import { User } from "../models/User.js";
 import { MESSAGES } from "../constants/messages.js";
 import mongoose from "mongoose";
+import path from 'path';
 
 export const createProfile = async (
   req: Request,
@@ -104,7 +105,7 @@ export const updateProfile = async (
       { userId: req.params.userId },
       req.body,
       { new: true, session, runValidators: true } // Respect validation rules when updating
-    ).populate("userId", "email role"); // We want email and role in the response
+    ).populate("userId", "avatarUrl");
 
     await session.commitTransaction();
     res.json(updatedProfile);
@@ -158,6 +159,7 @@ export const uploadPic = async(
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
+      
       const { image } = req.files;
 
       if (!image || !(image.mimetype as string).includes("image")) {
@@ -165,9 +167,19 @@ export const uploadPic = async(
         return;
       } 
 
+      // Check if profile exists
+      const existingProfile = await UserProfile.findOne({
+        _id: req.params.userId
+      }).session(session);
+      if (!existingProfile) {
+        await session.abortTransaction();
+        res.status(404).json({ message: MESSAGES.PROFILE.NOT_FOUND });
+        return;
+      }
+
       const fileName = (image.name as string).replace(/^[0-9\s]*|[+*\r\n]/g, '');
 
-      image.mv(__dirname + '/images/' + fileName);
+      image.mv(path.join(global.fileRoot,'images') + "/"+fileName);
 
       const updated = await UserProfile.findByIdAndUpdate(
         req.params.userId,
@@ -175,14 +187,8 @@ export const uploadPic = async(
         { new: true, session, runValidators: true }
       ).populate("userId", "avatarUrl");
 
-      if(!updated) {
-        await session.abortTransaction();
-        res.status(404).json({ message: MESSAGES.PROFILE.NOT_FOUND });
-        return;
-      }
-
       await session.commitTransaction();
-      res.sendStatus(200).json({message: "image uploaded!"});
+      res.json(updated);
 
     }catch (error) {
       await session.abortTransaction();
