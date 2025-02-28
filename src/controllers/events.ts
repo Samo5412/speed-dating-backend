@@ -34,7 +34,17 @@ export const getEvents = async (req: Request, res: Response): Promise<void> => {
 
 export const getEvent = async (req: Request, res: Response): Promise<void> => {
   try {
-    const event = await Event.findById(req.params.eventId);
+    const event = await Event.findById(req.params.eventId)
+      .populate({
+        path: "participants",
+        populate: {
+          path: "profile",
+          model: "UserProfile",
+          select: "fullName avatarUrl",
+        },
+      })
+      .exec();
+
     if (event) {
       res.json(event);
     } else {
