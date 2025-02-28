@@ -22,19 +22,18 @@ const UserProfileSchema = new mongoose.Schema({
   phoneNumber: { type: String },
   occupation: { type: String },
   avatarUrl: { type: String },
-  preferredAgeRange: { type: String },
   bio: { type: String },
   interests: [
     {
-      type: String,
-      enum: ALLOWED_INTERESTS,
+      type: String
+  
     },
   ],
   lookingFor: {
     ageRange: { type: String },
-    personality: { type: String },
     relationshipType: { type: String },
   },
+  eventPreference: { type: String },
 });
 
 const UserProfile = mongoose.model("UserProfile", UserProfileSchema);

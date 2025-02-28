@@ -16,7 +16,7 @@ declare module "express-session" {
 }
 export const register = async (req: Request, res: Response): Promise<void> => {
 	try {
-		const { fullName, email, password } = req.body;
+		const { fullName, email, password, dateOfBirth, gender } = req.body;
 		if (!email || !password) {
             res.status(400).json({
 				error: MESSAGES.REGISTER.MISSING_CREDENTIALS,
@@ -43,6 +43,11 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 		const userProfile = new UserProfile({
 			userId: newUser._id,
 			fullName: fullName,
+			dateOfBirth: dateOfBirth,
+			gender: gender,
+			occupation: "",
+			interests: [],
+			lookingFor: {ageRange: "", relationshipType:"unsure"}
 		});
 		newUser.profile = userProfile._id;
 		await newUser.save();
