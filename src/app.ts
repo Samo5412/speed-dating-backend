@@ -14,6 +14,7 @@ import { eventsRouter } from "./routes/events.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fileUpload from 'express-fileupload';
+import fs from "fs"; 
 
 dotenv.config();
 
@@ -94,6 +95,10 @@ const port = process.env.PORT || 3000;
 const api_path = process.env.API_PATH || "";
 
 global.fileRoot = path.dirname(fileURLToPath(import.meta.url));
+
+if(!fs.existsSync(path.join(global.fileRoot, "images"))) {
+  fs.mkdirSync(path.join(global.fileRoot, "images"));
+}
 
 app.use(`${api_path}/users`, usersRouter);
 app.use(`${api_path}/reviews`, reviewsRouter);
