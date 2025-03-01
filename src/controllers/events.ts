@@ -40,7 +40,7 @@ export const getEvent = async (req: Request, res: Response): Promise<void> => {
         populate: {
           path: "profile",
           model: "UserProfile",
-          select: "fullName avatarUrl",
+          select: "fullName avatarUrl dateOfBirth gender",
         },
       })
       .exec();

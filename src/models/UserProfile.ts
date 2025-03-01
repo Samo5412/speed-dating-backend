@@ -12,7 +12,7 @@ const ALLOWED_INTERESTS = [
   "sports",
 ] as const;
 
-const ALLOWED_GENDERS = ["man", "woman"] as const;
+const ALLOWED_GENDERS = ["male", "female"] as const;
 
 const UserProfileSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -25,8 +25,7 @@ const UserProfileSchema = new mongoose.Schema({
   bio: { type: String },
   interests: [
     {
-      type: String
-  
+      type: String,
     },
   ],
   lookingFor: {
