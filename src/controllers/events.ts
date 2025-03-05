@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Event } from "../models/Event.js";
 import { MESSAGES } from "../constants/messages.js";
-import { ALLOWED_ROLES } from "../models/User.js";
+import { ALLOWED_ROLES, User } from "../models/User.js";
 
 export const createEvent = async (
   req: Request,
@@ -119,6 +119,39 @@ export const registerParticipantOnEvent = async (
       return;
     }
 
+    // Fetch user's gender from UserProfile
+    const user = await User.findById(userId).populate<{ profile: { gender: string } }>("profile", "gender");
+
+    if (!user || !user.profile) {
+      res.status(404).json({ message: MESSAGES.USER.NOT_FOUND });
+      return;
+    }
+
+    const userGender = user.profile.gender;
+    if (!userGender) {
+      res.status(400).json({ message: "User gender information is missing." });
+      return;
+    }
+
+    // Fetch all participant genders in the event
+    const participantProfiles = await User.find({ _id: { $in: event.participants } })
+  .populate<{ profile: { gender: string } }>("profile", "gender");
+
+    const genderCount = participantProfiles.reduce((count, participant) => {
+      if (participant.profile?.gender) {
+        count[participant.profile.gender] = (count[participant.profile.gender] || 0) + 1;
+      }
+      return count;
+    }, {} as Record<string, number>);
+
+    const maxPerGender = event.maximumParticipants / 2;
+
+    // Check gender quota before allowing registration
+    if ((genderCount[userGender] || 0) >= maxPerGender) {
+      res.status(400).json({ message: `Unable to join event: The limit for your gender has been reached.` });
+      return;
+    }
+
     // Add participant to event
     event.participants.push(userId);
     const updatedEvent = await event.save();
@@ -128,6 +161,7 @@ export const registerParticipantOnEvent = async (
     res.status(400).json({ message: error.message });
   }
 };
+
 
 export const startEvent = async (
   req: Request,
