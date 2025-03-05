@@ -5,7 +5,8 @@ import {
   getReviews,
   updateReview,
   deleteReview,
-  getReviewsByReviewerId
+  getReviewsByReviewerId,
+  getReviewsByEvent
 } from "../controllers/reviews.js";
 import { verify } from "../auth/auth.js";
 
@@ -16,6 +17,7 @@ router.post("/", verify, createReview);
 router.get("/", verify, getReviews);
 router.get("/:reviewerId", verify, getReview);
 router.get("/user/:reviewerId", verify, getReviewsByReviewerId);
+router.get("/events/reviews/:eventId/:round",verify, getReviewsByEvent);
 
 router.put("/:reviewerId", verify, updateReview);
 
