@@ -15,7 +15,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fileUpload from 'express-fileupload';
 import fs from "fs"; 
-
+import {Server} from 'socket.io'
 dotenv.config();
 
 // The Express server instance
@@ -106,13 +106,21 @@ app.use(`${api_path}/userProfiles`, userProfilesRouter);
 app.use(`${api_path}/events`, eventsRouter);
 app.use(`${api_path}/images`, express.static(path.join(global.fileRoot, "images")));
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
 	console.log(`Server is running on port ${port}`);
 });
 
 app.get("/", function (req, res) {
 	res.send("Backend is running");
 });
+const io = new Server(server, {
+  cors: corsOptions
+});
+// socket IO 
+io.on('connection', (socket) => {
+  // console.log("här");  // test för att se om anslutningen fungerar
+  socket.emit('connection', {message: 'a new client connected'});
+})
 
 function getProdSessionConfig() {
   return {
@@ -145,3 +153,4 @@ function getDevSessionConfig() {
     store: store,
   };
 }
+

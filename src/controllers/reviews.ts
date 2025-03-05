@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Review } from "../models/Review.js";
 import { MESSAGES } from "../constants/messages.js";
 import { User } from "../models/User.js";
+import { Event } from "../models/Event.js";
 
 export const createReview = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -81,3 +82,24 @@ export const getReviewsByReviewerId = async (
     res.status(500).json({ message: error.message });
   }
 };
+
+
+export const getReviewsByEvent = async(req:Request, res:Response):Promise<void> => {
+  try {
+    const { eventId, round } = req.params;
+
+    const event = await Event.find({_id: eventId});
+    if(!event) {
+      res.status(404).json({ message: MESSAGES.EVENT.NOT_FOUND });
+      return;
+    }
+
+    const reviews = await Review.find({eventId: eventId, round: round})
+    .populate('reviewerId', 'email')
+    .populate('reviewedUserId', 'email');
+    res.json(reviews);
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
