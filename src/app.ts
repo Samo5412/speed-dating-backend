@@ -118,9 +118,43 @@ const io = new Server(server, {
 });
 // socket IO 
 io.on('connection', (socket) => {
-  // console.log("här");  // test för att se om anslutningen fungerar
-  socket.emit('connection', {message: 'a new client connected'});
+  //console.log(socket.id+" connected");
+  // användare går med i events
+  socket.on("join_events", (data) => {
+    data.forEach((entry:any) => {
+      if(!socket.rooms.has("E:"+entry._id)) {
+        socket.join("E:"+entry._id);
+      }
+    });
+  });
+
+  socket.on("join_event", (data) => {
+    if(!socket.rooms.has("E:"+data._id)) {
+      socket.join("E:"+data._id);
+    }
+    //console.log("joined "+data._id);
+  })
+
+  socket.on("leave_event", (data) => {
+    socket.leave("E:"+data._id);
+    //console.log("left "+data._id);
+  })
+
+  // organizer startar event, skickas till användares notiser
+  socket.on("start_event", (event) => {
+    socket.to("E:"+event._id).emit("notify_start", "event ("+event._id+") started");
+  })
+  // organizer uppdaterar event
+  socket.on("update_event", (event) => {
+    socket.to("E:"+event._id).emit("notify", "event ("+event._id+"): "+event.state);
+  })
+
+  socket.on("disconnect", () => {
+    //console.log(socket.id+" left");
+  });
 })
+
+
 
 function getProdSessionConfig() {
   return {
