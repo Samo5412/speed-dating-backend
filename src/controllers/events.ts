@@ -40,7 +40,7 @@ export const getEvent = async (req: Request, res: Response): Promise<void> => {
         populate: {
           path: "profile",
           model: "UserProfile",
-          select: "fullName avatarUrl dateOfBirth gender",
+          select: "fullName avatarUrl dateOfBirth gender interests lookingFor",
         },
       })
       .exec();
@@ -120,7 +120,9 @@ export const registerParticipantOnEvent = async (
     }
 
     // Fetch user's gender from UserProfile
-    const user = await User.findById(userId).populate<{ profile: { gender: string } }>("profile", "gender");
+    const user = await User.findById(userId).populate<{
+      profile: { gender: string };
+    }>("profile", "gender");
 
     if (!user || !user.profile) {
       res.status(404).json({ message: MESSAGES.USER.NOT_FOUND });
@@ -134,12 +136,14 @@ export const registerParticipantOnEvent = async (
     }
 
     // Fetch all participant genders in the event
-    const participantProfiles = await User.find({ _id: { $in: event.participants } })
-  .populate<{ profile: { gender: string } }>("profile", "gender");
+    const participantProfiles = await User.find({
+      _id: { $in: event.participants },
+    }).populate<{ profile: { gender: string } }>("profile", "gender");
 
     const genderCount = participantProfiles.reduce((count, participant) => {
       if (participant.profile?.gender) {
-        count[participant.profile.gender] = (count[participant.profile.gender] || 0) + 1;
+        count[participant.profile.gender] =
+          (count[participant.profile.gender] || 0) + 1;
       }
       return count;
     }, {} as Record<string, number>);
@@ -148,7 +152,11 @@ export const registerParticipantOnEvent = async (
 
     // Check gender quota before allowing registration
     if ((genderCount[userGender] || 0) >= maxPerGender) {
-      res.status(400).json({ message: `Unable to join event: The limit for your gender has been reached.` });
+      res
+        .status(400)
+        .json({
+          message: `Unable to join event: The limit for your gender has been reached.`,
+        });
       return;
     }
 
@@ -161,7 +169,6 @@ export const registerParticipantOnEvent = async (
     res.status(400).json({ message: error.message });
   }
 };
-
 
 export const startEvent = async (
   req: Request,
