@@ -10,7 +10,7 @@ export const getAllUsers = async (
   res: Response
 ): Promise<void> => {
   try {
-    const users = await User.find();
+    const users = await User.find().populate("profile");
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
