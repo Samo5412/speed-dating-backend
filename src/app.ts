@@ -120,10 +120,12 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   //console.log(socket.id+" connected");
   // användare går med i events
+
   socket.on("join_events", (data) => {
     data.forEach((entry:any) => {
       if(!socket.rooms.has("E:"+entry._id)) {
         socket.join("E:"+entry._id);
+        //console.log("joined "+entry.name);
       }
     });
   });
@@ -142,11 +144,11 @@ io.on('connection', (socket) => {
 
   // organizer startar event, skickas till användares notiser
   socket.on("start_event", (event) => {
-    socket.to("E:"+event._id).emit("notify_start", "event ("+event._id+") started");
+    socket.nsp.to("E:"+event._id).emit("notify_start", {message:"event ("+event.name+") is starting!"});
   })
   // organizer uppdaterar event
   socket.on("update_event", (event) => {
-    socket.to("E:"+event._id).emit("notify", "event ("+event._id+"): "+event.state);
+    socket.nsp.to("E:"+event._id).emit("notify");
   })
 
   socket.on("disconnect", () => {
