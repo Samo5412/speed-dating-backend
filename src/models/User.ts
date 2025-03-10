@@ -15,11 +15,11 @@ const UserSchema = new mongoose.Schema({
     required: true,
     index: true,
   },
-  profile: { type: mongoose.Schema.Types.ObjectId, ref: "UserProfile" },
+  profile: { type: mongoose.Schema.Types.ObjectId, ref: "UserProfile", autopopulate: true },
   sharedContacts: [
     {
       // contact references User B (not this user).
-      contactId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      contactId: { type: mongoose.Schema.Types.ObjectId, ref: "User", autopopulate: true },
       // status represents User A's (this user's) response.
       status: {
         type: String,
@@ -29,7 +29,7 @@ const UserSchema = new mongoose.Schema({
       createdAt: { type: Date, default: Date.now },
     },
   ],
-  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }], // TODO: This field can probably be removed
+  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review", autopopulate: true }], // TODO: This field can probably be removed
   notifications: [
     {
       message: { type: String, required: true },
@@ -39,11 +39,11 @@ const UserSchema = new mongoose.Schema({
   ],
   dateMatches: [
     {
-      event: { type: mongoose.Schema.Types.ObjectId, ref: "Event" },
+      event: { type: mongoose.Schema.Types.ObjectId, ref: "Event", autopopulate: true },
       round: { type: Number, required: true },
       
       // participant references User B (not this user).
-      participant: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      participant: { type: mongoose.Schema.Types.ObjectId, ref: "User", autopopulate: true   },
     },
   ],
   createdAt: { type: Date, default: Date.now },

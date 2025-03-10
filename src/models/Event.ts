@@ -7,9 +7,10 @@ const EventSchema = new mongoose.Schema({
     ref: "User",
     required: true,
     index: true,
+    autopopulate: true,
   },
   participants: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
+    { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true, autopopulate: true },
   ],
   startDateTime: { type: Date },
   endDateTime: { type: Date },
