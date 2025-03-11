@@ -146,6 +146,12 @@ io.on('connection', (socket) => {
   socket.on("start_event", (event) => {
     socket.nsp.to("E:"+event._id).emit("notify_start", {message:"event ("+event.name+") is starting!"});
   })
+
+  // organizer startar event, skickas till användares notiser
+  socket.on("start_round", (event) => {
+    socket.nsp.to("E:"+event._id).emit("notify_round", {message:""+event.name+" is starting round "+(event.nextRound.roundNumber+1)+"!"});
+  });
+
   // organizer uppdaterar event
   socket.on("update_event", (event) => {
     socket.nsp.to("E:"+event._id).emit("notify");
