@@ -10,7 +10,12 @@ const EventSchema = new mongoose.Schema({
     autopopulate: true,
   },
   participants: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true, autopopulate: true },
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      index: true,
+      autopopulate: true,
+    },
   ],
   startDateTime: { type: Date },
   endDateTime: { type: Date },
@@ -25,6 +30,25 @@ const EventSchema = new mongoose.Schema({
     startTime: { type: Date },
     endTime: { type: Date },
   },
+  rounds: [
+    {
+      roundNumber: { type: Number, required: true },
+      matchedPairs: [
+        {
+          participants: [
+            {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "User",
+              required: false,
+            },
+          ],
+          tableNumber: { type: Number, required: true },
+          matchScore: { type: Number, required: true },
+          reasoning: { type: String },
+        },
+      ],
+    },
+  ],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
