@@ -46,10 +46,10 @@ export const getAllUsers = async (
 
 export const getUserById = async (
   req: Request,
-  res: Response
+  res: Response   
 ): Promise<void> => {
   try {
-    const user = await User.findById(req.params.userId);
+    const user = await User.findById(req.params.userId).populate("profile reviews dateMatches");
     if (user) {
       res.json(user);
     } else {
