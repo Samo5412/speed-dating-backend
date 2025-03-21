@@ -20,13 +20,22 @@ const ReviewSchema = new mongoose.Schema({
     index: true,
   },
   round: {
-    type: Number, required: true
+    type: Number,
+    required: true,
   },
-  rating: { type: Number, min: 1, max: 5, required: true },
+  rating: {
+    type: Number,
+    min: 1,
+    max: 5,
+    required: function () {
+      return this.showedUp === true;
+    },
+  },
+
   comment: { type: String },
-  showedUp: {type: Boolean},
-  sameTable: {type:Boolean},
-  sitNextTo: {type:Boolean},
+  showedUp: { type: Boolean },
+  sameTable: { type: Boolean },
+  sitNextTo: { type: Boolean },
   createdAt: { type: Date, default: Date.now },
 });
 
